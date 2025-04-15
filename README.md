@@ -70,4 +70,3 @@ A comprehensive restaurant management solution featuring QR-based ordering, real
 1. **Clone Repository**
    ```bash
    git clone https://github.com/vishalpanwar416/Table-Tap-Project.git
-   cd Table-Tap-Project
