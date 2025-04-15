@@ -1,70 +1,73 @@
-# Getting Started with Create React App
+# Table Tap - Modern Restaurant Management System 🍔🖥️
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![GitHub License](https://img.shields.io/github/license/vishalpanwar416/Table-Tap-Project)](https://github.com/vishalpanwar416/Table-Tap-Project/blob/main/LICENSE)
+[![React Version](https://img.shields.io/badge/react-18.2.0-blue)](https://reactjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-9.23.0-orange)](https://firebase.google.com/)
 
-## Available Scripts
+A comprehensive restaurant management solution featuring QR-based ordering, real-time order tracking, and multi-role interfaces for customers, staff, and administrators.
 
-In the project directory, you can run:
+![Table Tap System Overview](https://via.placeholder.com/1200x600.png?text=Table+Tap+System+Showcase)
 
-### `npm start`
+## Table of Contents
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [Installation](#-installation)
+- [System Architecture](#-system-architecture)
+- [Screenshots](#-screenshots)
+- [API Reference](#-api-reference)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🌟 Key Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### For Customers
+- 📱 QR Code Menu Access
+- 🛒 Real-time Order Customization
+- 🔔 Order Status Notifications
+- 💳 Integrated Payment Gateway
+- ⏱️ Estimated Wait Times
 
-### `npm test`
+### For Restaurant Staff
+- 🚨 Order Alert System
+- 📊 Kitchen Display System (KDS)
+- 📈 Performance Analytics
+- 🔄 Inventory Management
+- 📋 Table Management
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### For Administrators
+- 📊 Sales Dashboard
+- 🧮 Menu Engineering Tools
+- 👥 Staff Management
+- 📅 Shift Scheduling
+- 📉 Cost Control Analytics
 
-### `npm run build`
+## 🛠️ Technology Stack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Frontend**  
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Backend**  
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Dev Tools**  
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat&logo=vite)
+![Git](https://img.shields.io/badge/Git-F05032?style=flat&logo=git)
+![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=flat&logo=eslint)
 
-### `npm run eject`
+## 💻 Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Prerequisites
+- Node.js >= 16.x
+- npm >= 8.x
+- Firebase project setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Setup Instructions
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/vishalpanwar416/Table-Tap-Project.git
+   cd Table-Tap-Project
