@@ -78,7 +78,7 @@ const NotificationSidebar = ({
 
           <motion.div
             key="notification-overlay"
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm rounded-l-[80px]"
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"

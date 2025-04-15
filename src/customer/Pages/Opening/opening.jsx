@@ -51,7 +51,7 @@ export default function Opening() {
 
 function SplashScreen() {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 md:from-cyan-100 md:to-white">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 md:bg-gradient-to-b md:from-cyan-100 md:to-white">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -66,21 +66,22 @@ function SplashScreen() {
 
 function LoginScreen({ handleSkip, handleLogin }) {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-cyan-100 md:bg-gradient-to-r md:from-cyan-100 md:to-white gap-10 pt-[250px] pb-[100px]">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-200 opacity-90 md:bg-gradient-to-r 
+    md:from-cyan-100 md:to-white gap-6 pt-[80%] md:pt-[250px] pb-[150px] md:pb-[100px]">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col items-center"
+        className="flex flex-col items-center px-4"
       >
-        <img src={logo1} alt="Logo" className="w-[300px] md:w-[400px]" />
+        <img src={logo1} alt="Logo" className="w-[250px] md:w-[400px]" />
       </motion.div>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
-        className="mt-12 w-64 flex flex-col gap-4 pb-10 font-spartan-medium"
+        className="mt-8 w-full max-w-xs flex flex-col gap-4 pb-6 font-spartan-medium px-4 "
       >
         <button 
           className="py-3 bg-white border-2 border-gray-800 text-gray-800 rounded-full shadow-sm

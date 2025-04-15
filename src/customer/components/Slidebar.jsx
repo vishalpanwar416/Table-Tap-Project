@@ -43,7 +43,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, menuOptions, userNa
             <div className="py-4">
               {menuOptions.map((option, index) => (
                 <div key={index}>
-                  <button className="w-full py-3 px-6 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 group">
+                  <button className="w-full py-3 px-6 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 rounded-l-full group">
                     <div className="bg-gray-700 rounded-full p-3 mr-4 group-hover:bg-purple-500 transition-colors">
                       {React.cloneElement(option.icon, { className: "w-5 h-5 text-gray-300 group-hover:text-white" })}
                     </div>
@@ -54,7 +54,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, menuOptions, userNa
             </div>
 
             <div className="mt-8 mb-6">
-              <button className="w-full py-5 px-20 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 group"
+              <button className="w-full py-5 px-20 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 rounded-l-full group"
                 onClick={() => {
                   toggleSidebar();
                   onLogout();
