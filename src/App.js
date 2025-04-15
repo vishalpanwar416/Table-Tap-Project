@@ -1,25 +1,31 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-
-function App() {
+import Opening from './customer/Pages/Opening/opening';
+import Homepaget from './customer/Pages/HomePage/HomePaget';
+import BestSellerPage from './customer/Pages/BestSellerPage';
+import LoginPage from './customer/Pages/LoginPage';
+import { CartProvider } from './customer/components/CartContent';
+import "@fontsource/league-spartan";
+import OnboardingScreen from './customer/Pages/Opening/onboardingScreen';
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CartProvider>
+    <Router>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<Opening />} />
+          <Route path="/skip1" element={<OnboardingScreen />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/home" element={<Homepaget />} />
+          <Route path="/best-sellers" element={<BestSellerPage />} />
+          {/* Add redirect for unknown paths */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </Router>
+    </CartProvider>
   );
-}
+};
 
 export default App;
