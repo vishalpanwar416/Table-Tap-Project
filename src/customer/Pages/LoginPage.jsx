@@ -85,7 +85,10 @@ export default function LoginPage() {
         {/* Sign Up Link */}
         <div className="mt-auto pt-6 text-center">
           <p className="text-gray-600 text-xl pb-[150px]">
-            Don't have an account? <span className="text-red-500 font-medium">Sign Up</span>
+            Don't have an account? 
+            <button 
+            onClick={() => navigate('/signup')}
+            className="text-red-500 font-medium">Sign Up</button>
           </p>
         </div>
       </div>

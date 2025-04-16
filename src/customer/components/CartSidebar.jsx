@@ -7,7 +7,10 @@ const CartSlidebar = ({ isOpen, onClose }) => {
   const { cartItems, updateQuantity, removeItem } = useCart();
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => {
+      const price = typeof item.price === 'number' ? item.price : Number(item.price);
+      return total + (price * item.quantity);
+    }, 0);
   };
 
   const slideVariants = {
@@ -58,7 +61,9 @@ const CartSlidebar = ({ isOpen, onClose }) => {
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
                     <div className="flex-1 ml-4">
                       <h3 className="text-white font-medium">{item.name}</h3>
-                      <p className="text-gray-400 text-sm">₹{item.price.toFixed(2)}</p>
+                      <p className="text-gray-400 text-sm">
+                          ₹{typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
+                        </p>
                       <div className="flex items-center mt-2">
                         <button 
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}

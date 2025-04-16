@@ -31,6 +31,7 @@ export default function Opening() {
 
   const handleSkip = () => navigate('/skip1');
   const handleLogin = () => navigate('/login');
+  const handleSignup = () => navigate('/signup');
 
   return (
     <div className="w-full h-screen flex justify-center items-center font-spartan overflow-hidden">
@@ -41,7 +42,7 @@ export default function Opening() {
           </MotionFrame>
         ) : (
           <MotionFrame key="login">
-            <LoginScreen handleSkip={handleSkip} handleLogin={handleLogin} />
+            <LoginScreen handleSkip={handleSkip} handleLogin={handleLogin} handleSignup={handleSignup} />
           </MotionFrame>
         )}
       </AnimatePresence>
@@ -64,7 +65,7 @@ function SplashScreen() {
   );
 }
 
-function LoginScreen({ handleSkip, handleLogin }) {
+function LoginScreen({ handleSkip, handleLogin, handleSignup }) {
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-cyan-100 md:bg-gradient-to-r md:from-cyan-100 md:to-white gap-10 pt-[250px] pb-[100px]">
       <motion.div
@@ -89,8 +90,11 @@ function LoginScreen({ handleSkip, handleLogin }) {
         >
           Log In
         </button>
-        <button className="py-3 bg-white text-gray-800 border-2 border-gray-800 rounded-full shadow-sm
-                          hover:bg-gray-50 transition-colors">
+        <button 
+          onClick={handleSignup}
+          className="py-3 bg-white text-gray-800 border-2 border-gray-800 rounded-full shadow-sm
+                          hover:bg-gray-50 transition-colors"
+        >
           Sign Up
         </button>
         <button 

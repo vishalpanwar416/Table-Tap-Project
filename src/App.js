@@ -8,6 +8,7 @@ import LoginPage from './customer/Pages/LoginPage';
 import { CartProvider } from './customer/components/CartContent';
 import "@fontsource/league-spartan";
 import OnboardingScreen from './customer/Pages/Opening/onboardingScreen';
+import SignupPage from './customer/Pages/SignupPage';
 const App = () => {
   return (
     <CartProvider>
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<Homepaget />} />
           <Route path="/best-sellers" element={<BestSellerPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           {/* Add redirect for unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

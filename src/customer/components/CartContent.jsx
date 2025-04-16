@@ -8,13 +8,23 @@ export const CartProvider = ({ children }) => {
   // Add to cart function
   const addToCart = (item) => {
     setCartItems(prev => {
-      const existing = prev.find(i => i.id === item.id);
+      const numericPriceItem = {
+        ...item,
+        price: typeof item.price === 'string' ? 
+               parseFloat(item.price) : 
+               item.price
+      };
+      
+      const existing = prev.find(i => i.id === numericPriceItem.id);
+      
       if (existing) {
         return prev.map(i => 
-          i.id === item.id ? {...i, quantity: i.quantity + 1} : i
+          i.id === numericPriceItem.id ? 
+          { ...i, quantity: i.quantity + 1 } : 
+          i
         );
       }
-      return [...prev, {...item, quantity: 1}];
+      return [...prev, { ...numericPriceItem, quantity: 1 }];
     });
   };
   // Update quantity function
