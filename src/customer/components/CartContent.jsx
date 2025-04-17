@@ -8,18 +8,23 @@ export const CartProvider = ({ children }) => {
   // Add to cart function
   const addToCart = (item) => {
     setCartItems(prev => {
+      const sanitizedPrice = typeof item.price === 'string' 
+        ? parseFloat(item.price.replace(/[^0-9.]/g, '')) 
+        : item.price;
+  
       const numericPriceItem = {
         ...item,
-        price: typeof item.price === 'string' ? 
-               parseFloat(item.price) : 
-               item.price
+        price: sanitizedPrice
       };
       
-      const existing = prev.find(i => i.id === numericPriceItem.id);
+      const existing = prev.find(i => 
+        i.id === numericPriceItem.id && 
+        i.category === numericPriceItem.category
+      );
       
       if (existing) {
         return prev.map(i => 
-          i.id === numericPriceItem.id ? 
+          i.id === numericPriceItem.id && i.category === numericPriceItem.category ? 
           { ...i, quantity: i.quantity + 1 } : 
           i
         );
@@ -28,17 +33,26 @@ export const CartProvider = ({ children }) => {
     });
   };
   // Update quantity function
-  const updateQuantity = (itemId, newQuantity) => {
+  const updateQuantity = (itemId, newQuantity, itemName, category) => {
     setCartItems(prev => 
       prev.map(item => 
-        item.id === itemId ? {...item, quantity: newQuantity} : item
+        item.id === itemId && 
+        item.name === itemName && 
+        item.category === category
+          ? { ...item, quantity: newQuantity }
+          : item
       )
     );
   };
-
-  // Remove item function
-  const removeItem = (itemId) => {
-    setCartItems(prev => prev.filter(item => item.id !== itemId));
+  
+  const removeItem = (itemId, itemName, category) => {
+    setCartItems(prev => 
+      prev.filter(item => 
+        !(item.id === itemId && 
+          item.name === itemName && 
+          item.category === category)
+      )
+    );
   };
 
   return (

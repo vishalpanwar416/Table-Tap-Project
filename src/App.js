@@ -9,9 +9,11 @@ import { CartProvider } from './customer/components/CartContent';
 import "@fontsource/league-spartan";
 import OnboardingScreen from './customer/Pages/Opening/onboardingScreen';
 import SignupPage from './customer/Pages/SignupPage';
+import { LikesProvider } from './customer/components/LikesContent';
 const App = () => {
   return (
     <CartProvider>
+    <LikesProvider>
     <Router>
       <div className="app">
         <Routes>
@@ -26,6 +28,7 @@ const App = () => {
         </Routes>
       </div>
     </Router>
+    </LikesProvider>
     </CartProvider>
   );
 };

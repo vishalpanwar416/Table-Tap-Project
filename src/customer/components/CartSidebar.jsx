@@ -8,7 +8,9 @@ const CartSlidebar = ({ isOpen, onClose }) => {
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = typeof item.price === 'number' ? item.price : Number(item.price);
+      const price = typeof item.price === 'number' 
+        ? item.price 
+        : Number(item.price) || 0; // Fallback to 0 if invalid
       return total + (price * item.quantity);
     }, 0);
   };
@@ -52,28 +54,31 @@ const CartSlidebar = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            <div className="h-[calc(100vh-160px)] overflow-y-auto p-4">
+            <div className="h-[calc(100vh-160px)] overflow-y-auto p-4 pb-16">
               {cartItems.length === 0 ? (
                 <p className="text-gray-400 text-center mt-8">Your cart is empty</p>
               ) : (
                 cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between mb-4 p-2 bg-gray-800 rounded-lg">
+                  <div 
+                  key={`${item.id}-${item.category}`} 
+                      className="flex items-center justify-between mb-4 p-2 bg-gray-800 rounded-lg"
+                    >
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
                     <div className="flex-1 ml-4">
                       <h3 className="text-white font-medium">{item.name}</h3>
                       <p className="text-gray-400 text-sm">
-                          ₹{typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
-                        </p>
+                        ₹{typeof item.price === 'number' ? item.price.toFixed(2) : Number(item.price).toFixed(2)}
+                      </p>
                       <div className="flex items-center mt-2">
                         <button 
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1, item.category )}
                           className="bg-gray-700 text-white px-2 py-1 rounded-l"
                         >
                           -
                         </button>
                         <span className="bg-gray-700 px-3 py-1 text-white">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.category )}
                           className="bg-gray-700 text-white px-2 py-1 rounded-r"
                         >
                           +
@@ -81,7 +86,7 @@ const CartSlidebar = ({ isOpen, onClose }) => {
                       </div>
                     </div>
                     <button 
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.id, item.category)}
                       className="text-red-500 hover:text-red-400 ml-4"
                     >
                       Remove

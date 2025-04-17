@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import logo1 from '../../../customer/Photos/Burger.jpg';
-import logo2 from '../../../customer/Photos/chickencurry.jpg';
+import logo1 from '../../../customer/Photos/Food/Burger.jpg';
+import logo2 from '../../../customer/Photos/Food/chickencurry.jpg';
 import { useNavigate } from 'react-router-dom';
 
 export default function OnboardingScreens() {

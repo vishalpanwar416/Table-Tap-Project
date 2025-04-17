@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContent';
 
-const RecommendationItem = ({ id, image, alt, foodType, price }) => {
+
+const RecommendationItem = ({ id, image, alt, foodType, price, category}) => {
   const [isLiked, setIsLiked] = useState(false);
   const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
   const cartItem = cartItems.find(item => item.id === id);
@@ -16,15 +17,16 @@ const RecommendationItem = ({ id, image, alt, foodType, price }) => {
       name: alt,
       price,
       image,
-      foodType
+      foodType,
+      category: category
     });
   };
 
   const handleDecrement = () => {
     if (quantity === 1) {
-      removeItem(id);
+      removeItem(id, category);
     } else {
-      updateQuantity(id, quantity - 1);
+      updateQuantity(id, quantity - 1, category );
     }
   };
 

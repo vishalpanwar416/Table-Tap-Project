@@ -34,7 +34,7 @@ export default function Opening() {
   const handleSignup = () => navigate('/signup');
 
   return (
-    <div className="w-full h-screen flex justify-center items-center font-spartan overflow-hidden">
+    <div className="w-full max-h-screen flex justify-center items-center font-spartan overflow-hidden">
       <AnimatePresence mode='wait'>
         {currentScreen === 'splash' ? (
           <MotionFrame key="splash">
@@ -52,7 +52,7 @@ export default function Opening() {
 
 function SplashScreen() {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 md:from-cyan-100 md:to-white">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 md:from-cyan-100 md:to-white pt-[5%]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -67,14 +67,14 @@ function SplashScreen() {
 
 function LoginScreen({ handleSkip, handleLogin, handleSignup }) {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-cyan-100 md:bg-gradient-to-r md:from-cyan-100 md:to-white gap-10 pt-[250px] pb-[100px]">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-cyan-100 md:bg-gradient-to-r md:from-cyan-100 md:to-white gap-10 pt-[10%]">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
         className="flex flex-col items-center"
       >
-        <img src={logo1} alt="Logo" className="w-[300px] md:w-[400px]" />
+        <img src={logo1} alt="Logo" className="w-[280px] md:w-[400px]" />
       </motion.div>
       
       <motion.div

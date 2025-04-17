@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContent';
-
 const BestSellers = ({ foodItems }) => {
   const navigate = useNavigate();
 
@@ -17,11 +16,23 @@ const BestSellers = ({ foodItems }) => {
 
     const handleDecrement = () => {
       if (quantity === 1) {
-        removeItem(item.id);
+        removeItem(item.id, item.category);
       } else {
-        updateQuantity(item.id, quantity - 1);
+        updateQuantity(item.id, quantity - 1, item.category );
       }
     };
+    if (!foodItems || !Array.isArray(foodItems)) {
+      return (
+        <div className="mt-6 px-1 text-black">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-xl font-thick font-spartan-bold">Best Seller</h2>
+            <button className="text-orange-500 text-sm flex items-center hover:underline">
+              Loading best sellers...
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-w-[150px] rounded-xl overflow-hidden relative shadow-lg group hover:shadow-xl transition-shadow duration-200">
@@ -43,7 +54,10 @@ const BestSellers = ({ foodItems }) => {
             </button>
             <span className="text-white text-xs">{quantity}</span>
             <button 
-              onClick={() => addToCart(item)}
+              onClick={() => addToCart({
+                ...item,
+                category: item.category
+              })}
               className="text-white text-xs hover:bg-black/90 px-1 rounded"
             >
               +

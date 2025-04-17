@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Heart, ShoppingBag, User, CreditCard, Phone, HelpCircle, Settings, ArrowLeft } from 'lucide-react';
-import { sushiImg, curryImg, lasagnaImg, cupcakeImg } from '../Photos/Index';
+import { sushiImg, curryImg, lasagnaImg, cupcakeImg } from '../Photos/Food/Index';
 import Header from '../../customer/components/Header';
 import Sidebar from '../../customer/components/Slidebar';
 import NotificationSidebar from '../../customer/components/NotificationSlidebar';
 import CartSidebar from '../../customer/components/CartSidebar';
-import { profileImg } from '../../customer/Photos/Index';
+import { profileImg } from '../Photos/Food/Index';
 import { useCart } from '../components/CartContent';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ const bestSellerItems = [
   { id: 4, image: cupcakeImg, name: "Cupcake", price: 170, description: "Sweet vanilla cupcake" }
 ];
 
-const RecommendationItem = ({ image, name, price, description, item }) => {
+const BestSellerItem = ({ image, name, price, description, item }) => {
   const [isLiked, setIsLiked] = useState(false);
   const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
   const cartItem = cartItems.find(i => i.id === item.id);
@@ -170,7 +170,7 @@ const BestSellerPage = () => {
           <div className="grid grid-cols-2 gap-4">
             {bestSellerItems.map((item) => (
               <div key={item.id} className="aspect-square">
-                <RecommendationItem
+                <BestSellerItem
                   image={item.image}
                   name={item.name}
                   price={item.price}

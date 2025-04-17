@@ -17,6 +17,8 @@ import { useCart } from '../../components/CartContent';
 import LogoutPopup from '../../components/LogoutPopup';
 import { useNavigate } from 'react-router-dom'; 
 import DynamicGreeting from '../../components/Greetings';
+import LikedItems from '../../components/LikedItems';
+import { getBestsellers } from '../../FoodData/foodData';
 // Import images
 import {
   sushiImg,
@@ -26,7 +28,7 @@ import {
   burgerImg,
   pancakeImg,
   profileImg
-} from '../../Photos/Index';
+} from '../../Photos/Food/Index';
 
 
 const categories = [
@@ -73,13 +75,13 @@ const menuOptions = [
   { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" /> },
   { name: 'Settings', icon: <Settings className="w-6 h-6" /> },
 ];
-// HomePaget.jsx
-const bestSellerItems = [
-  { id: 1, image: sushiImg, name: "Sushi Platter", price: 499 }, // Added id
-  { id: 2, image: curryImg, name: "Chicken Curry", price: 389 },
-  { id: 3, image: lasagnaImg, name: "Lasagna", price: 199 },
-  { id: 4, image: cupcakeImg, name: "Cupcake", price: 170 }
-];
+// In HomePaget.jsx, keep the local array until migration is complete
+// const bestSellerItems = [
+//   { id: 1, image: sushiImg, name: "Sushi Platter", price: 499 },
+//   { id: 2, image: curryImg, name: "Chicken Curry", price: 389 },
+//   { id: 3, image: lasagnaImg, name: "Lasagna", price: 199 },
+//   { id: 4, image: cupcakeImg, name: "Cupcake", price: 170 }
+// ];
 const recommendationItems = [
   { id: 5, image: burgerImg, name: "Burger", price: 499 },
   { id: 2, image: curryImg, name: "Chicken Curry", price: 389 },
@@ -134,13 +136,13 @@ export default function HomePage() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const bestSellerItems = getBestsellers();
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
       const container = scrollRef.current;
       const start = container.scrollLeft;
-      const containerWidth = container.clientWidth;
-      
+
       container.scrollTo({
         left: start + scrollOffset,
         behavior: 'smooth'
@@ -286,11 +288,11 @@ export default function HomePage() {
 
           {/* Best Sellers */}
           <motion.div variants={staggerItems}>
-            <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
+          <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
           </motion.div>
 
           <Divider />
-
+          <LikedItems/>
           {/* Recommendations */}
           <motion.div className="px-1 pb-2 text-black flex-1">
             <div className="flex justify-between items-center mb-3">

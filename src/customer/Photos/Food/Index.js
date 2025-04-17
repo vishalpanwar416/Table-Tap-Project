@@ -1,4 +1,4 @@
-// src/Photos/index.js
+
 import sushiImg from './Sushi.jpg';
 import curryImg from './chickencurry.jpg';
 import lasagnaImg from './lasagna.jpg';
