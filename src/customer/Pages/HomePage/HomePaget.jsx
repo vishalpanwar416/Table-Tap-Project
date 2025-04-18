@@ -1,8 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Sandwich, UtensilsCrossed, CupSoda, IceCream, Tag, User,
-  ShoppingBag, CreditCard, Phone, HelpCircle, Settings, ArrowRight
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Maincarosel from '../../components/HomeCarosel/Maincarosel';
 import { MenuDropdown, Divider } from '../../components/MenuDropdown';
 import RecommendationItem from '../../components/RecommendationItems';
@@ -18,80 +15,14 @@ import LogoutPopup from '../../components/LogoutPopup';
 import { useNavigate } from 'react-router-dom'; 
 import DynamicGreeting from '../../components/Greetings';
 import LikedItems from '../../components/LikedItems';
-import { getBestsellers } from '../../FoodData/foodData';
-// Import images
+import { allFoodItems } from '../../FoodData/foodData';
 import {
-  sushiImg,
-  curryImg,
-  lasagnaImg,
-  cupcakeImg,
-  burgerImg,
-  pancakeImg,
   profileImg
 } from '../../Photos/Food/Index';
 
-
-const categories = [
-  { name: 'Snacks', icon: <Sandwich className="w-6 h-6" color="gray" /> },
-  { name: 'Main Course', icon: <UtensilsCrossed className="w-6 h-6" color="gray" /> },
-  { name: 'Beverages', icon: <CupSoda className="w-6 h-6" color="gray" /> },
-  { name: 'Dessert', icon: <IceCream className="w-6 h-6" color="gray" /> },
-  { name: 'Offers', icon: <Tag className="w-6 h-6" color="gray" /> },
-];
-
-const menuItems = {
-  'Snacks': [
-    { name: "Mexican Appetizer", price: "₹499", image: sushiImg },
-    { name: "Pork Skewer", price: "₹399", image: burgerImg },
-    { name: "Spring Rolls", price: "₹299", image: pancakeImg }
-  ],
-  'Main Course': [
-    { name: "Chicken Curry", price: "₹650", image: curryImg },
-    { name: "Beef Steak", price: "₹899", image: burgerImg },
-    { name: "Pasta Alfredo", price: "₹599", image: lasagnaImg },
-    { name: "Fish & Chips", price: "₹699", image: sushiImg }
-  ],
-  'Beverages': [
-    { name: "Fresh Lemonade", price: "₹149", image: pancakeImg },
-    { name: "Iced Tea", price: "₹129", image: cupcakeImg },
-    { name: "Smoothie", price: "₹199", image: burgerImg }
-  ],
-  'Dessert': [
-    { name: "Chocolate Cake", price: "₹349", image: cupcakeImg },
-    { name: "Ice Cream Sundae", price: "₹249", image: pancakeImg },
-    { name: "Cheesecake", price: "₹399", image: lasagnaImg }
-  ],
-  'Offers': [
-    { name: "Combo Meal - 20% OFF", price: "₹499", image: burgerImg },
-    { name: "Happy Hour - Buy 1 Get 1", price: "₹699", image: sushiImg }
-  ]
-};
-
-const menuOptions = [
-  { name: 'My Orders', icon: <ShoppingBag className="w-6 h-6" /> },
-  { name: 'My Profile', icon: <User className="w-6 h-6" /> },
-  { name: 'Payment Methods', icon: <CreditCard className="w-6 h-6" /> },
-  { name: 'Contact Us', icon: <Phone className="w-6 h-6" /> },
-  { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" /> },
-  { name: 'Settings', icon: <Settings className="w-6 h-6" /> },
-];
-// In HomePaget.jsx, keep the local array until migration is complete
-// const bestSellerItems = [
-//   { id: 1, image: sushiImg, name: "Sushi Platter", price: 499 },
-//   { id: 2, image: curryImg, name: "Chicken Curry", price: 389 },
-//   { id: 3, image: lasagnaImg, name: "Lasagna", price: 199 },
-//   { id: 4, image: cupcakeImg, name: "Cupcake", price: 170 }
-// ];
-const recommendationItems = [
-  { id: 5, image: burgerImg, name: "Burger", price: 499 },
-  { id: 2, image: curryImg, name: "Chicken Curry", price: 389 },
-  { id: 3, image: lasagnaImg, name: "Lasagna", price: 199 },
-  { id: 6, image: pancakeImg, name: "Pancake", price: 169 },
-  { id: 1, image: sushiImg, name: "Sushi Roll", price: 599 },
-  { id: 4, image: cupcakeImg, name: "Choco Cupcake", price: 249 },
-  { id: 7, image: burgerImg, name: "Cheese Burger", price: 399 },
-  { id: 8, image: curryImg, name: "Paneer Curry", price: 349 }
-];
+const recommendedItems = allFoodItems.filter(item => 
+  item.tags?.some(tag => tag.toLowerCase() === 'recommended')
+);
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -122,7 +53,6 @@ const itemAnimation = {
 
 export default function HomePage() {
   
-  //const [activeTab, setActiveTab] = useState('home');
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('');
@@ -136,7 +66,21 @@ export default function HomePage() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
-  const bestSellerItems = getBestsellers();
+  const bestSellerItems = allFoodItems.filter(item => 
+    item.tags?.some(tag => tag.toLowerCase() === 'bestseller')
+  );
+  const handleCategoryClick = (category, event) => {
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    
+    setMenuPosition({
+      top: buttonRect.bottom + window.scrollY,
+      left: buttonRect.left,
+      width: buttonRect.width
+    });
+    
+    setActiveCategory(category.name);
+    setMenuOpen(true);
+  };
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -152,45 +96,26 @@ export default function HomePage() {
   
   const toggleNotifications = () => {
     setIsNotificationOpen(!isNotificationOpen);
-    setIsSidebarOpen(false); // Close profile sidebar if open
+    setIsSidebarOpen(false); 
   };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-    setIsNotificationOpen(false); // Close notifications if open
+    setIsNotificationOpen(false); 
   };
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
-    // setIsNotificationOpen(false); // Close notifications if open
   };
-
-  const handleCategoryClick = (category, event) => {
-    const buttonRect = event.currentTarget.getBoundingClientRect();
-    
-    setMenuPosition({
-      top: buttonRect.bottom + window.scrollY,
-      left: buttonRect.left,
-      width: buttonRect.width
-    });
-    
-    if (activeCategory === category.name && menuOpen) {
-      setMenuOpen(false);
-    } else {
-      setActiveCategory(category.name);
-      setMenuOpen(true);
-    }
-  };
-
   const handleCloseMenu = () => setMenuOpen(false);
-
   return (
+    <div className="w-full min-h-screen bg-black"> 
     <motion.div
       initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
-      className="bg-black text-white font-spartan-medium min-h-screen max-w-md mx-auto relative overflow-hidden flax-col"
+      className="bg-black text-white font-spartan-medium min-h-screen max-w-md mx-auto relative overflow-visible flax-col "
     >
       <LogoutPopup 
         isOpen={isLogoutOpen}
@@ -198,7 +123,7 @@ export default function HomePage() {
         onConfirm={() => {
           navigate('/home');
           setIsLogoutOpen(false);
-          setIsSidebarOpen(false); // Close sidebar after logout
+          setIsSidebarOpen(false); 
         }}
       />
       {/* Profile Sidebar */}
@@ -208,7 +133,6 @@ export default function HomePage() {
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
             profileImg={profileImg}
-            menuOptions={menuOptions}
             userName="Vishal Panwar"
             userEmail="Vishalpanwar416@gmail.com"
             onLogout={() => setIsLogoutOpen(true)}
@@ -243,7 +167,7 @@ export default function HomePage() {
       <Header
         isSearchActive={isSearchActive}
         toggleSearch={toggleSearch}
-        toggleSidebar={toggleSidebar}  // Add this
+        toggleSidebar={toggleSidebar}  
         toggleNotifications={toggleNotifications}
         toggleCart={toggleCart}
         cartItems={cartItems}
@@ -256,16 +180,18 @@ export default function HomePage() {
         </motion.div>
 
         {/* Carousel */}
-        <motion.div {...slideUp} className="px-5 mt-4">
-          <Maincarosel />
+        <motion.div 
+          {...slideUp} 
+        >
+          <div className="relative pt-3 pb-3 mx-2 my-2">
+            <Maincarosel />
+          </div>
         </motion.div>
-      
+              
         {/* Categories */}
-        <motion.div {...slideUp} className="mt-4 bg-white rounded-t-[30px] rounded-b-none p-6 flex-1">
-          <CategoryButtons 
-            categories={categories}
+        <motion.div {...slideUp} className="bg-white rounded-t-[30px] rounded-b-none px-6 py-6 pb-2 flex-1">
+          <CategoryButtons
             activeCategory={activeCategory}
-            menuOpen={menuOpen}
             handleCategoryClick={handleCategoryClick}
             categoryButtonsRef={categoryButtonsRef}
           />
@@ -273,14 +199,15 @@ export default function HomePage() {
           <AnimatePresence>
             {menuOpen && (
               <MenuDropdown 
-                menuOpen={menuOpen}
-                handleCloseMenu={handleCloseMenu}
-                menuPosition={menuPosition}
-                activeCategory={activeCategory}
-                menuItems={menuItems}
-                categoryButtonsRef={categoryButtonsRef}
-                onAddToCart={addToCart}
-              />
+              key={activeCategory}
+              menuOpen={menuOpen}
+              handleCloseMenu={handleCloseMenu}
+              menuPosition={menuPosition}
+              activeCategory={activeCategory}
+              menuItems={allFoodItems.filter(item => item.category === activeCategory)} 
+              categoryButtonsRef={categoryButtonsRef}
+              onAddToCart={addToCart}
+            />
             )}
           </AnimatePresence>
 
@@ -292,7 +219,12 @@ export default function HomePage() {
           </motion.div>
 
           <Divider />
-          <LikedItems/>
+
+
+          {/* Liked Items */}
+          <LikedItems foodItems={allFoodItems}/>
+
+
           {/* Recommendations */}
           <motion.div className="px-1 pb-2 text-black flex-1">
             <div className="flex justify-between items-center mb-3">
@@ -311,15 +243,15 @@ export default function HomePage() {
               variants={staggerItems}
               style={{ 
                 scrollSnapType: 'x mandatory',
-                minHeight: '320px' // Minimum height to ensure vertical space
+                minHeight: '320px' 
               }}
             >
-              {recommendationItems.map((item) => (
+              {recommendedItems.map((item) => (
                 <motion.div 
                   key={item.id} 
                   id={item.id}
                   variants={itemAnimation}
-                  className="h-[160px] w-[160px]" // Use aspect ratio for square items
+                  className="h-[160px] w-[160px]"
                   style={{ scrollSnapAlign: 'start' }}
                 >
                   <RecommendationItem 
@@ -328,6 +260,7 @@ export default function HomePage() {
                     alt={item.name}
                     foodType={item.description}
                     price={item.price}
+                    category={item.category}
                     onAddToCart={() => addToCart(item)}
                   />
                 </motion.div>
@@ -337,5 +270,6 @@ export default function HomePage() {
         </motion.div>
       </motion.div>
     </motion.div>
+    </div>
   );
 }

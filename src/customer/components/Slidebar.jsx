@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut } from 'lucide-react';
+import { LogOut, ShoppingBag, User, CreditCard, Phone, HelpCircle, Settings } from 'lucide-react';
 
-const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, menuOptions, userName, userEmail, onLogout }) => {
+const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail, onLogout }) => {
   const slideVariants = {
     hidden: { x: '100%', opacity: 0 },
     visible: { 
@@ -12,6 +12,15 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, menuOptions, userNa
     },
     exit: { x: '100%', opacity: 0, transition: { duration: 0.3 } }
   };
+  const menuOptions = [
+    { name: 'My Orders', icon: <ShoppingBag className="w-6 h-6" /> },
+    { name: 'My Profile', icon: <User className="w-6 h-6" /> },
+    { name: 'Payment Methods', icon: <CreditCard className="w-6 h-6" /> },
+    { name: 'Contact Us', icon: <Phone className="w-6 h-6" /> },
+    { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" /> },
+    { name: 'Settings', icon: <Settings className="w-6 h-6" /> },
+  ];
+  
 
   const overlayVariants = {
     hidden: { opacity: 0 },

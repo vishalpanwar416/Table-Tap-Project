@@ -33,28 +33,24 @@ export const CartProvider = ({ children }) => {
     });
   };
   // Update quantity function
-  const updateQuantity = (itemId, newQuantity, itemName, category) => {
+  const removeItem = (id, category) => {
     setCartItems(prev => 
-      prev.map(item => 
-        item.id === itemId && 
-        item.name === itemName && 
-        item.category === category
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
+      prev.filter(item => !(item.id === id && item.category === category))
     );
   };
   
-  const removeItem = (itemId, itemName, category) => {
-    setCartItems(prev => 
-      prev.filter(item => 
-        !(item.id === itemId && 
-          item.name === itemName && 
-          item.category === category)
-      )
-    );
+  const updateQuantity = (id, category, newQuantity) => {
+    setCartItems(prev => {
+      const updated = prev.map(item => {
+        if (item.id === id && item.category === category) {
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      });
+      return updated.filter(item => item.quantity > 0);
+    });
   };
-
+  
   return (
     <CartContext.Provider value={{
       cartItems,

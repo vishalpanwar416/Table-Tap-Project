@@ -1,14 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContent';
 import { useLikes } from './LikesContent';
+import { useNavigate } from 'react-router-dom';
 
 const LikedItems = ({ foodItems }) => {
-  const navigate = useNavigate();
   const { likedItems } = useLikes();
   const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
-
+  const navigate = useNavigate(); 
   if (!foodItems || !Array.isArray(foodItems)) return null;
   
   const likedFoodItems = foodItems.filter(item => 
@@ -22,8 +21,11 @@ const LikedItems = ({ foodItems }) => {
     const quantity = cartItem?.quantity || 0;
 
     const handleDecrement = () => {
-      if (quantity === 1) removeItem(item.id, item.category);
-      else updateQuantity(item.id, quantity - 1, item.category);
+      if (quantity === 1) {
+        removeItem(item.id, item.category);
+      } else {
+        updateQuantity(item.id, item.category, quantity - 1); // Fixed parameter order
+      }
     };
 
     return (
@@ -67,8 +69,10 @@ const LikedItems = ({ foodItems }) => {
       <div className="flex space-x-4 overflow-x-auto pb-2 scroll-smooth">
         {likedFoodItems.map(item => <FoodItem key={item.id} item={item} />)}
       </div>
-    </div>
+        <div className="my-4 w-full mx-auto h-px bg-gradient-to-r from-transparent via-orange-200 to-transparent"></div>
+      </div>
   );
 };
 
-export default LikedItems;
+
+  export default LikedItems;

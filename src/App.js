@@ -10,6 +10,8 @@ import "@fontsource/league-spartan";
 import OnboardingScreen from './customer/Pages/Opening/onboardingScreen';
 import SignupPage from './customer/Pages/SignupPage';
 import { LikesProvider } from './customer/components/LikesContent';
+import LikedItemsPage from './customer/Pages/LikedItemsPage';
+import AdminPage from './customer/Pages/AdminPage';
 const App = () => {
   return (
     <CartProvider>
@@ -23,6 +25,8 @@ const App = () => {
           <Route path="/home" element={<Homepaget />} />
           <Route path="/best-sellers" element={<BestSellerPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/liked-items" element={<LikedItemsPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           {/* Add redirect for unknown paths */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

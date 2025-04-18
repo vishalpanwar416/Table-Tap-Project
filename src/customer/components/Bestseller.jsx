@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Heart } from 'lucide-react';
 import { useCart } from './CartContent';
+import { useLikes } from './LikesContent';
+
 const BestSellers = ({ foodItems }) => {
   const navigate = useNavigate();
 
@@ -11,16 +13,19 @@ const BestSellers = ({ foodItems }) => {
 
   const FoodItem = ({ item }) => {
     const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
+    const { toggleLike,likedItems } = useLikes();
     const cartItem = cartItems.find(i => i.id === item.id);
     const quantity = cartItem?.quantity || 0;
 
+    const isLiked = likedItems.some(likedItem => likedItem.id === item.id);
     const handleDecrement = () => {
       if (quantity === 1) {
         removeItem(item.id, item.category);
       } else {
-        updateQuantity(item.id, quantity - 1, item.category );
+        updateQuantity(item.id, item.category, quantity - 1); 
       }
     };
+
     if (!foodItems || !Array.isArray(foodItems)) {
       return (
         <div className="mt-6 px-1 text-black">
@@ -37,7 +42,14 @@ const BestSellers = ({ foodItems }) => {
     return (
       <div className="min-w-[150px] rounded-xl overflow-hidden relative shadow-lg group hover:shadow-xl transition-shadow duration-200">
         <img src={item.image} alt={item.name} className="w-full h-24 object-cover" />
-        
+        <button 
+        className="absolute top-2 left-2 bg-white/70 rounded-full p-1 z-10"
+        onClick={() => toggleLike(item)}
+      >
+        <Heart 
+          className={`h-4 w-4 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-500'}`}
+        />
+      </button>
         {/* Price Tag */}
         <div className="absolute top-0 right-0 bg-black/80 px-1 rounded-md">
           <span className="text-white text-xs font-semibold">₹{item.price}</span>
@@ -95,12 +107,16 @@ const BestSellers = ({ foodItems }) => {
         </button>
       </div>
       <div className="flex space-x-4 overflow-x-auto pb-2 scroll-smooth ">
-        {foodItems.map((item) => (
-          <FoodItem 
-            key={item.id}
-            item={item}
-          />
-        ))}
+        {foodItems
+          .filter(item => 
+            item.tags?.some(tag => tag.toLowerCase() === 'bestseller')
+          )
+          .map((item) => (
+            <FoodItem 
+              key={item.id}
+              item={item}
+            />
+          ))}
       </div>
     </div>
   );

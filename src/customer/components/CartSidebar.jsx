@@ -60,7 +60,7 @@ const CartSlidebar = ({ isOpen, onClose }) => {
               ) : (
                 cartItems.map((item) => (
                   <div 
-                  key={`${item.id}-${item.category}`} 
+                      key={`${item.id}-${item.category}`} 
                       className="flex items-center justify-between mb-4 p-2 bg-gray-800 rounded-lg"
                     >
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
@@ -70,15 +70,21 @@ const CartSlidebar = ({ isOpen, onClose }) => {
                         ₹{typeof item.price === 'number' ? item.price.toFixed(2) : Number(item.price).toFixed(2)}
                       </p>
                       <div className="flex items-center mt-2">
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.quantity - 1, item.category )}
+                      <button 
+                          onClick={() => {
+                            if (item.quantity === 1) {
+                              removeItem(item.id, item.category);
+                            } else {
+                              updateQuantity(item.id, item.category, item.quantity - 1);
+                            }
+                          }}
                           className="bg-gray-700 text-white px-2 py-1 rounded-l"
                         >
                           -
-                        </button>
+                        </button> 
                         <span className="bg-gray-700 px-3 py-1 text-white">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.category )}
+                          onClick={() => updateQuantity(item.id, item.category, item.quantity + 1)}
                           className="bg-gray-700 text-white px-2 py-1 rounded-r"
                         >
                           +

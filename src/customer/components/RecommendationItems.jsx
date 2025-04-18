@@ -1,15 +1,14 @@
-import { useState } from 'react';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContent';
+import { useLikes } from './LikesContent';
 
-
-const RecommendationItem = ({ id, image, alt, foodType, price, category}) => {
-  const [isLiked, setIsLiked] = useState(false);
+const RecommendationItem = ({ id, image, alt, foodType, price, category }) => {
+  const { toggleLike, likedItems } = useLikes();
   const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
   const cartItem = cartItems.find(item => item.id === id);
   const quantity = cartItem?.quantity || 0;
 
-  const toggleLike = () => setIsLiked(!isLiked);
+  const isLiked = likedItems.some(likedItem => likedItem.id === id);
 
   const handleAddToCart = () => {
     addToCart({
@@ -18,7 +17,7 @@ const RecommendationItem = ({ id, image, alt, foodType, price, category}) => {
       price,
       image,
       foodType,
-      category: category
+      category
     });
   };
 
@@ -26,10 +25,9 @@ const RecommendationItem = ({ id, image, alt, foodType, price, category}) => {
     if (quantity === 1) {
       removeItem(id, category);
     } else {
-      updateQuantity(id, quantity - 1, category );
+      updateQuantity(id, category, quantity - 1); // Fixed parameter order
     }
   };
-
   return (
     <div className="relative h-full w-full rounded-lg overflow-hidden aspect-square">
       <div className="relative h-full w-full">
@@ -43,7 +41,14 @@ const RecommendationItem = ({ id, image, alt, foodType, price, category}) => {
       {/* Like Button */}
       <button 
         className="absolute top-2 right-2 bg-white/70 rounded-full p-1"
-        onClick={toggleLike}
+        onClick={() => toggleLike({
+          id,
+          name: alt,
+          category,
+          price,
+          image,
+          description: foodType
+        })}
       >
         <Heart 
           className={`h-4 w-4 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-500'}`}

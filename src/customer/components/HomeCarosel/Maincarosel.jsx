@@ -7,7 +7,7 @@ import { MaincaroselData } from './MaincaroselData'; // adjust path if needed
 const items = MaincaroselData.map((item, index) => (
   <div
     key={index}
-    className="flex flex-row w-full h-[200px] rounded-[3rem] overflow-hidden shadow-md px-2"
+    className="flex flex-row max-w-full max-h-[190px] rounded-[3rem] overflow-hidden shadow-md"
   >
     <div className="w-1/2 bg-gray-700 text-white flex flex-col justify-center items-center px-3">
       <p className="text-xl font-medium text-center">{item.message}</p>
@@ -29,7 +29,7 @@ const BannerCarousel = () => (
     dotsControls={true}
     touchTracking={true}
     animationType="fadeout"
-    animationDuration={800}
+    animationDuration={1000}
     items={items}
   />
   </div>

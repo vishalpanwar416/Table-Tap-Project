@@ -7,17 +7,12 @@ export const LikesProvider = ({ children }) => {
 
   const toggleLike = (item) => {
     setLikedItems(prev => {
-        const existingIndex = prev.findIndex(li => 
-            li.id === item.id && 
-            li.category === item.category &&
-            li.name === item.name
-          );
-          
-          if (existingIndex > -1) {
-            return prev.filter((_, index) => index !== existingIndex);
-          }
-          return [...prev, item];
-        });
+      const existingIndex = prev.findIndex(li => li.id === item.id);
+      if (existingIndex > -1) {
+        return prev.filter((_, index) => index !== existingIndex);
+      }
+      return [...prev, item];
+    });
   };
 
   return (
