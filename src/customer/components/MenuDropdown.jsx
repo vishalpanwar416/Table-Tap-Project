@@ -2,6 +2,7 @@ import { X, Heart, ShoppingBag } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCart } from "./CartContent";
 import { useLikes } from "./LikesContent";
+import PriceDisplay from './PriceDisplay'
 
 const MenuDropdown = ({
   menuOpen,
@@ -163,9 +164,11 @@ const MenuDropdown = ({
                     <p className="text-black font-medium text-lg">{item.name}</p>
                     <p className="text-gray-500 text-sm mt-1">{item.description}</p>
                   </div>
-                  <p className="text-black font-bold ml-4">
-                    ₹{Number(item.price).toFixed(2)}
-                  </p>
+                  <PriceDisplay 
+                    item={item} 
+                    className="text-black font-semibold text-lg"
+                    percentageClass="bg-gray-200 text-gray-800"
+                  />
                 </div>
                 <div className="flex justify-end mt-3">
                   {quantity > 0 ? (

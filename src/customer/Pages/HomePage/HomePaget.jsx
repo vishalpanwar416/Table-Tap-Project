@@ -255,13 +255,7 @@ export default function HomePage() {
                   style={{ scrollSnapAlign: 'start' }}
                 >
                   <RecommendationItem 
-                    image={item.image}
-                    id={item.id}
-                    alt={item.name}
-                    foodType={item.description}
-                    price={item.price}
-                    category={item.category}
-                    onAddToCart={() => addToCart(item)}
+                    item={item}
                   />
                 </motion.div>
               ))}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart } from 'lucide-react';
 import { useCart } from './CartContent';
 import { useLikes } from './LikesContent';
+import PriceDisplay from './PriceDisplay';
 
 const BestSellers = ({ foodItems }) => {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ const BestSellers = ({ foodItems }) => {
       </button>
         {/* Price Tag */}
         <div className="absolute top-0 right-0 bg-black/80 px-1 rounded-md">
-          <span className="text-white text-xs font-semibold">₹{item.price}</span>
+          <PriceDisplay item={item}/>
         </div>
 
         {/* Quantity Controls or Add Button */}

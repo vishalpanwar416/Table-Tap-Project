@@ -34,7 +34,7 @@ export default function Opening() {
   const handleSignup = () => navigate('/signup');
 
   return (
-    <div className="w-full max-h-screen flex justify-center items-center font-spartan overflow-hidden">
+    <div className="w-full max-h-screen flex justify-center items-center font-spartan overflow-hidden bg-white">
       <AnimatePresence mode='wait'>
         {currentScreen === 'splash' ? (
           <MotionFrame key="splash">

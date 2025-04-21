@@ -1,5 +1,5 @@
 // AdminPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { categories } from '../FoodData/foodData';
 import { allFoodItems, addFoodItem, updateFoodItem, deleteFoodItem } from '../FoodData/foodData';

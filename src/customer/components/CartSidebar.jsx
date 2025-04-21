@@ -2,15 +2,21 @@ import React from 'react';
 import { X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from './CartContent';
+import PriceDisplay from './PriceDisplay';
 
 const CartSlidebar = ({ isOpen, onClose }) => {
   const { cartItems, updateQuantity, removeItem } = useCart();
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = typeof item.price === 'number' 
-        ? item.price 
-        : Number(item.price) || 0; // Fallback to 0 if invalid
+      let price = item.price;
+      
+      if (item.discountType === 'percentage') {
+        price = item.price * (1 - item.discountValue/100);
+      } else if (item.discountType === 'fixed') {
+        price = item.price - item.discountValue;
+      }
+      
       return total + (price * item.quantity);
     }, 0);
   };
@@ -66,9 +72,7 @@ const CartSlidebar = ({ isOpen, onClose }) => {
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
                     <div className="flex-1 ml-4">
                       <h3 className="text-white font-medium">{item.name}</h3>
-                      <p className="text-gray-400 text-sm">
-                        ₹{typeof item.price === 'number' ? item.price.toFixed(2) : Number(item.price).toFixed(2)}
-                      </p>
+                      <PriceDisplay item={item}/>
                       <div className="flex items-center mt-2">
                       <button 
                           onClick={() => {
