@@ -1,5 +1,4 @@
-
-const PriceDisplay = ({ item  }) => {
+const PriceDisplay = ({ item, className = '', percentageClass = '' }) => {
     const calculatePrice = () => {
       if (item.discountType === 'percentage') {
         return item.price * (1 - item.discountValue/100);
@@ -14,27 +13,23 @@ const PriceDisplay = ({ item  }) => {
     const hasDiscount = finalPrice < item.price;
   
     return (
-      <div className="flex flex-col items-end">
+      <div className={`flex flex-col items-end ${className}`}>
         {hasDiscount ? (
           <>
-            <span className="text-gray-400 line-through text-sm">
+            <span className="line-through text-sm">
               ₹{item.price.toFixed(2)}
             </span>
             <div className="flex items-center gap-1">
-              <span className="text-green-600 font-semibold">
-                ₹{finalPrice.toFixed(2)}
-              </span>
+              <span>₹{finalPrice.toFixed(2)}</span>
               {item.discountType === 'percentage' && (
-                <span className="text-xs bg-green-100 text-green-800 px-1 rounded">
+                <span className={`text-xs px-1 rounded ${percentageClass}`}>
                   {item.discountValue}% OFF
                 </span>
               )}
             </div>
           </>
         ) : (
-          <span className="text-white">
-            ₹{item.price.toFixed(2)}
-          </span>
+          <span>₹{item.price.toFixed(2)}</span>
         )}
       </div>
     );

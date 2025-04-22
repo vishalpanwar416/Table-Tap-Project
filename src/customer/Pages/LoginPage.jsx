@@ -19,7 +19,7 @@ export default function LoginPage() {
         <button className="absolute left-4 top-8 text-orange-500"
         onClick={() => navigate('/home')}
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={30} />
         </button>
         <h1 className="text-gray-300 text-2xl font-medium">Log In</h1>
       </div>

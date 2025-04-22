@@ -50,8 +50,8 @@ export default function OnboardingScreens() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black">
-      <div className="relative bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-lg min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black md: w-full">s
+      <div className="relative bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-lg min-h-screen md">
         <AnimatePresence mode='wait'>
           {/* Image Section */}
           <motion.div

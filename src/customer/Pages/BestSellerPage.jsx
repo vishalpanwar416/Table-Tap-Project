@@ -1,15 +1,15 @@
-import React, { useState, useEffect ,useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import { Heart, ShoppingBag, ArrowLeft } from 'lucide-react';
 import Header from '../../customer/components/Header';
 import Sidebar from '../../customer/components/Slidebar';
-import NotificationSidebar from '../../customer/components/NotificationSlidebar';
 import CartSidebar from '../../customer/components/CartSidebar';
+import NotificationSidebar from '../components/NotificationSlidebar';
 import { profileImg } from '../../customer/Photos/Food/Index';
 import { useCart } from '../../customer/components/CartContent';
 import { useNavigate } from 'react-router-dom';
 import { allFoodItems } from '../../customer/FoodData/foodData';
 import { useLikes } from '../../customer/components/LikesContent';
-
+import LogoutPopup from '../../customer/components/LogoutPopup';
 
 const bestSellerItems = allFoodItems.filter(item => 
   item.tags?.some(tag => tag.toLowerCase() === 'bestseller')
@@ -20,7 +20,6 @@ const BestSellerItem = ({ image, name, price, description, item }) => {
   const { cartItems, addToCart, updateQuantity, removeItem } = useCart();
   const cartItem = cartItems.find(i => i.id === item.id);
   const quantity = cartItem?.quantity || 0;
-
   const isLiked = likedItems.some(likedItem => likedItem.id === item.id);
 
   const handleDecrement = () => {
@@ -32,64 +31,55 @@ const BestSellerItem = ({ image, name, price, description, item }) => {
   };
 
   return (
-    <div className="relative h-full flex flex-col ">
-      <div className="relative rounded-xl overflow-hidden mb-2 flex-1">
+    <div className="relative h-full flex flex-col group hover:shadow-lg transition-shadow">
+      <div className="relative rounded-xl overflow-hidden mb-2 flex-1 aspect-square">
         <img 
           src={image} 
           alt={name}
           className="w-full h-full object-cover"
         />
         
-        {/* Like Button */}
         <button 
-          className="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1"
-            onClick={() => toggleLike({
-            id: item.id,
-            name: name,
-            category: item.category,
-            price: price,
-            image: image,
-          })}
+          className="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 backdrop-blur-sm hover:bg-white transition-colors"
+          onClick={() => toggleLike(item)}
         >
-          <Heart 
-            className={`h-4 w-4 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-500'}`}
-          />
+          <Heart className={`h-4 w-4 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-600'}`} />
         </button>
 
-        {/* Price Display */}
-        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md">
-        ₹{Number(price).toFixed(2)}
+        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2.5 py-1 rounded-lg">
+          ₹{Number(price).toFixed(2)}
         </div>
       </div>
       
-      <div className="text-black">
-        <h3 className="font-medium text-sm">{name}</h3>
-        <div className="flex justify-between items-center mt-1">
-          <p className="text-[10px] text-gray-500 truncate w-3/4">{description}</p>
+      <div className="text-black space-y-1">
+        <h3 className="font-medium text-sm md:text-base">{name}</h3>
+        <div className="flex justify-between items-center">
+          <p className="text-[10px] md:text-xs text-gray-600 line-clamp-2 pr-2">
+            {description}
+          </p>
           
-          {/* Cart Controls - Original Position */}
           {quantity > 0 ? (
-            <div className="flex items-center bg-black/80 rounded-md px-1 py-1 gap-1">
+            <div className="flex items-center bg-black/90 rounded-lg px-2 py-1 gap-2">
               <button 
                 onClick={handleDecrement}
-                className="text-white text-xs hover:bg-black/90 px-1 rounded"
+                className="text-white text-xs md:text-sm hover:bg-black/80 px-1 rounded"
               >
                 -
               </button>
-              <span className="text-white text-xs">{quantity}</span>
+              <span className="text-white text-xs md:text-sm">{quantity}</span>
               <button 
                 onClick={() => addToCart(item)}
-                className="text-white text-xs hover:bg-black/90 px-1 rounded"
+                className="text-white text-xs md:text-sm hover:bg-black/80 px-1 rounded"
               >
                 +
               </button>
             </div>
           ) : (
             <button 
-              className="bg-black text-black p-1 rounded"
+              className="bg-black/90 hover:bg-black p-1.5 rounded-lg transition-colors"
               onClick={() => addToCart(item)}
             >
-              <ShoppingBag className="w-4 h-4 text-white" />
+              <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </button>
           )}
         </div>
@@ -100,103 +90,92 @@ const BestSellerItem = ({ image, name, price, description, item }) => {
 
 const BestSellerPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const { cartItems } = useCart();
   const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    
-    const handleScroll = () => {
-      const scrollThreshold = 50; // Adjust this value to change when color starts transitioning
-      setIsScrolled(container.scrollTop > scrollThreshold);
-    };
-
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, []);
-  const toggleSearch = () => setIsSearchActive(!isSearchActive);
-  const toggleNotifications = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-    setIsSidebarOpen(false);
+  const toggle = {
+    sidebar: () => setIsSidebarOpen(!isSidebarOpen),
+    cart: () => setIsCartOpen(!isCartOpen),
+    search: () => setIsSearchActive(!isSearchActive),
+    notification: () => setIsNotificationOpen(!isNotificationOpen),
   };
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-    setIsNotificationOpen(false);
-  };
-  const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   return (
-    <div className={`flex justify-center items-start min-h-screen p-4 transition-colors duration-300 ${
-      isScrolled ? 'bg-black' : 'bg-black'
-    }`}>
-      <div className="w-full max-w-[390px] h-screen flex flex-col">
+    <div className="flex justify-center items-start min-h-screen bg-black p-4">
+      <div className="w-full max-w-[390px] md:max-w-4xl lg:max-w-6xl h-screen flex flex-col">
+        
+      <LogoutPopup 
+          isOpen={isLogoutOpen}
+          onClose={() => setIsLogoutOpen(false)}
+          onConfirm={() => {
+            navigate('/home');
+            setIsLogoutOpen(false);
+            setIsSidebarOpen(false);
+          }
+        }
+        />
+        
+        <Header 
+          isSearchActive={isSearchActive}
+          toggleSearch={toggle.search}
+          toggleSidebar={toggle.sidebar}
+          toggleNotifications={toggle.notification}
+          toggleCart={toggle.cart}
+          cartItems={cartItems}
+          className="mb-2 md:mb-3"
+        />
+
         <button 
-          className="absolute left-4 top-8 text-orange-500"
-          onClick={() => navigate('/home')}
+          className="absolute left-4 top-7 md:left-8 md:top-8 text-orange-500 hover:text-orange-600 transition-colors z-10"
+          onClick={() => navigate(-1)}
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={30} className="md:w-8 md:h-8" />
         </button>
 
         <Sidebar
           isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
+          toggleSidebar={toggle.sidebar}
           profileImg={profileImg}
           userName="Vishal Panwar"
           userEmail="Vishalpanwar416@gmail.com"
-        />
-
-        <NotificationSidebar 
-          isOpen={isNotificationOpen}
-          onClose={() => setIsNotificationOpen(false)}
+          onLogout={() => setIsLogoutOpen(true)}
         />
 
         <CartSidebar
           isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
+          onClose={toggle.cart}
           cartItems={cartItems}
         />
+          {isNotificationOpen && (
+           <NotificationSidebar 
+             isOpen={isNotificationOpen}
+             onClose={toggle.notification}
+            />
+          )}
 
-        <Header 
-          isSearchActive={isSearchActive}
-          toggleSearch={toggleSearch}
-          toggleSidebar={toggleSidebar}
-          toggleNotifications={toggleNotifications}
-          toggleCart={toggleCart}
-          cartItems={cartItems}
-        />
-        
-        <div className="mb-3 pt-4">
-          <h1 className="text-2xl font-semibold text-center text-white mb-6 font-spartan-medium">Best Seller</h1>
+        <div className="pt-4 md:pt-6 pb-6 relative">
+          <h1 className="text-3xl md:text-3xl text-center text-white font-spartan-medium">
+            Best Seller
+          </h1>
         </div>
-        
+
         <div 
           ref={containerRef}
-          className="bg-white rounded-3xl p-4 flex-1 flex flex-col min-h-[calc(100vh-200px)] overflow-y-auto"
+          className="bg-white rounded-3xl p-4 md:p-6 flex-1 flex flex-col min-h-[calc(100vh-200px)] overflow-y-auto shadow-xl"
         >
-          <p className="text-black font-medium text-lg mb-4 font-spartan-medium">Discover our most popular dishes!</p>
+          <p className="justify-center text-center text-black font-medium text-lg md:text-xl mb-4 md:mb-6 font-spartan-medium">
+            Discover our most popular dishes!
+          </p>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {bestSellerItems.map((item) => (
-              <div key={item.id} className="aspect-square">
-                <BestSellerItem
-                  image={item.image}
-                  name={item.name}
-                  price={item.price}
-                  description={item.description}
-                  item={item}
-                />
+              <div key={item.id} className="aspect-square md:aspect-[1/1.1]">
+                <BestSellerItem {...item} item={item} />
               </div>
             ))}
           </div>

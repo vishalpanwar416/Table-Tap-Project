@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ export default function SignUpPage() {
         <button 
         onClick={() => navigate('/home')}
         className="absolute left-4 top-8 text-orange-500">
-          <ArrowLeft size={24} />
+          <ArrowLeft size={30} />
         </button>
         <h1 className="text-white text-2xl font-bold">Create New Account</h1>
       </div>
@@ -132,18 +132,23 @@ export default function SignUpPage() {
         
         {/* Terms Agreement */}
         <div className="text-center mt-4 text-sm">
-          <p className="text-gray-600">
-            By continuing, you agree to our{' '}
-            <a href="#" className="text-red-500 font-medium hover:underline">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="#" className="text-red-500 font-medium hover:underline">
-              Privacy Policy
-            </a>
-          </p>
-        </div>
-        
+        <p className="text-gray-600">
+          By continuing, you agree to our{' '}
+          <Link 
+            to="/terms" 
+            className="text-red-500 font-medium hover:underline"
+          >
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link 
+            to="/privacy" 
+            className="text-red-500 font-medium hover:underline"
+          >
+            Privacy Policy
+          </Link>
+        </p>
+      </div>
         {/* Sign Up Button */}
         <button className="bg-orange-500 text-white py-3 rounded-full mt-6 font-medium text-lg hover:bg-orange-600 transition-colors">
           Create Account
@@ -162,7 +167,7 @@ export default function SignUpPage() {
               width="24px"
               height="24px"
             >
-              <path
+              {/* <path
                 fill="#EA4335"
                 d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
               />
@@ -177,7 +182,7 @@ export default function SignUpPage() {
               <path
                 fill="#34A853"
                 d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-              />
+              /> */}
             </svg>
             Continue with Google
           </button>
@@ -185,16 +190,17 @@ export default function SignUpPage() {
         
         {/* Login Link */}
         <div className="mt-6 text-center">
-          <p className="text-black text-sm">
-            Already have an account?{' '}
-            <button 
-            onClick={() => navigate('/login')}
-            className="text-red-500 font-medium hover:underline">
-              Login here
-            </button>
-          </p>
-        </div>
+        <p className="text-black text-sm">
+          Already have an account?{' '}
+          <Link 
+            to="/login" 
+            className="text-red-500 font-medium hover:underline"
+          >
+            Login here
+          </Link>
+        </p>
       </div>
     </div>
+  </div>
   );
 }

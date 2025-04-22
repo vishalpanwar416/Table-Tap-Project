@@ -16,13 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import DynamicGreeting from '../../components/Greetings';
 import LikedItems from '../../components/LikedItems';
 import { allFoodItems } from '../../FoodData/foodData';
-import {
-  profileImg
-} from '../../Photos/Food/Index';
+import { profileImg } from '../../Photos/Food/Index';
 
-const recommendedItems = allFoodItems.filter(item => 
-  item.tags?.some(tag => tag.toLowerCase() === 'recommended')
-);
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -44,15 +39,7 @@ const staggerItems = {
   }
 };
 
-const itemAnimation = {
-  initial: { scale: 0.9, opacity: 0 },
-  animate: { scale: 1, opacity: 1 }
-};
-
-
-
 export default function HomePage() {
-  
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('');
@@ -62,7 +49,6 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const categoryButtonsRef = useRef(null);
   const { addToCart, cartItems, removeItem, updateQuantity } = useCart();
-  const toggleSearch = () => setIsSearchActive(!isSearchActive);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -71,7 +57,6 @@ export default function HomePage() {
   );
   const handleCategoryClick = (category, event) => {
     const buttonRect = event.currentTarget.getBoundingClientRect();
-    
     setMenuPosition({
       top: buttonRect.bottom + window.scrollY,
       left: buttonRect.left,
@@ -81,6 +66,7 @@ export default function HomePage() {
     setActiveCategory(category.name);
     setMenuOpen(true);
   };
+
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -93,177 +79,165 @@ export default function HomePage() {
       });
     }
   };
-  
-  const toggleNotifications = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-    setIsSidebarOpen(false); 
-  };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-    setIsNotificationOpen(false); 
-  };
-
-  const toggleCart = () => {
-    setIsCartOpen(!isCartOpen);
+  const toggle = {
+    search: () => setIsSearchActive(!isSearchActive),
+    sidebar: () => setIsSidebarOpen(!isSidebarOpen),
+    cart: () => setIsCartOpen(!isCartOpen),
+    notifications: () => setIsNotificationOpen(!isNotificationOpen)
   };
   const handleCloseMenu = () => setMenuOpen(false);
+
   return (
-    <div className="w-full min-h-screen bg-black"> 
-    <motion.div
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={pageVariants}
-      className="bg-black text-white font-spartan-medium min-h-screen max-w-md mx-auto relative overflow-visible flax-col "
-    >
-      <LogoutPopup 
-        isOpen={isLogoutOpen}
-        onClose={() => setIsLogoutOpen(false)}
-        onConfirm={() => {
-          navigate('/home');
-          setIsLogoutOpen(false);
-          setIsSidebarOpen(false); 
-        }}
-      />
-      {/* Profile Sidebar */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <Sidebar
-            isSidebarOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            profileImg={profileImg}
-            userName="Vishal Panwar"
-            userEmail="Vishalpanwar416@gmail.com"
-            onLogout={() => setIsLogoutOpen(true)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Add NotificationSidebar */}
-      <AnimatePresence>
-        {isNotificationOpen && (
-          <NotificationSidebar 
-            isOpen={isNotificationOpen}
-            onClose={() => setIsNotificationOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isCartOpen && (
-          <CartSidebar
-            isOpen={isCartOpen}
-            onClose={() => setIsCartOpen(false)}
-            cartItems={cartItems}
-            updateQuantity={updateQuantity}
-            removeItem={removeItem}
-          />
-        )}
-      </AnimatePresence>
-      
-      
-      {/* Header */}
-      <Header
-        isSearchActive={isSearchActive}
-        toggleSearch={toggleSearch}
-        toggleSidebar={toggleSidebar}  
-        toggleNotifications={toggleNotifications}
-        toggleCart={toggleCart}
-        cartItems={cartItems}
-      />
-              
-      <motion.div variants={staggerItems} className="flex-1">
-        {/* Greeting */}
-        <motion.div {...slideUp} className="px-4 mt-2">
-          <DynamicGreeting />
-        </motion.div>
-
-        {/* Carousel */}
-        <motion.div 
-          {...slideUp} 
-        >
-          <div className="relative pt-3 pb-3 mx-2 my-2">
-            <Maincarosel />
-          </div>
-        </motion.div>
-              
-        {/* Categories */}
-        <motion.div {...slideUp} className="bg-white rounded-t-[30px] rounded-b-none px-6 py-6 pb-2 flex-1">
-          <CategoryButtons
-            activeCategory={activeCategory}
-            handleCategoryClick={handleCategoryClick}
-            categoryButtonsRef={categoryButtonsRef}
-          />
-
-          <AnimatePresence>
-            {menuOpen && (
-              <MenuDropdown 
-              key={activeCategory}
-              menuOpen={menuOpen}
-              handleCloseMenu={handleCloseMenu}
-              menuPosition={menuPosition}
-              activeCategory={activeCategory}
-              menuItems={allFoodItems.filter(item => item.category === activeCategory)} 
-              categoryButtonsRef={categoryButtonsRef}
-              onAddToCart={addToCart}
+    <div className="flex justify-center items-start min-h-screen bg-black p-4">
+      <div className="w-full max-w-[390px] md:max-w-4xl lg:max-w-6xl h-screen flex flex-col">
+            <motion.div
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageVariants}
+              className="w-full max-w-[390px] md:max-w-4xl lg:max-w-6xl mx-auto relative overflow-visible flex-col"
+            >
+            <LogoutPopup 
+              isOpen={isLogoutOpen}
+              onClose={() => setIsLogoutOpen(false)}
+              onConfirm={() => {
+                navigate('/home');
+                setIsLogoutOpen(false);
+                setIsSidebarOpen(false); 
+              }}
             />
-            )}
-          </AnimatePresence>
+            <AnimatePresence>
+              {isSidebarOpen && (
+                <Sidebar
+                  isSidebarOpen={isSidebarOpen}
+                  toggleSidebar={toggle.sidebar}
+                  profileImg={profileImg}
+                  userName="Vishal Panwar"
+                  userEmail="Vishalpanwar416@gmail.com"
+                  onLogout={() => setIsLogoutOpen(true)}
+                />
+              )}
+            </AnimatePresence>
 
-          <Divider />
+            <AnimatePresence>
+              {isNotificationOpen && (
+                <NotificationSidebar 
+                  isOpen={isNotificationOpen}
+                  onClose={toggle.notifications}
+                />
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {isCartOpen && (
+                <CartSidebar
+                  isOpen={isCartOpen}
+                  onClose={() => setIsCartOpen(false)}
+                  cartItems={cartItems}
+                  updateQuantity={updateQuantity}
+                  removeItem={removeItem}
+                />
+              )}
+            </AnimatePresence>
 
-          {/* Best Sellers */}
-          <motion.div variants={staggerItems}>
-          <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
-          </motion.div>
+          <Header 
+            isSearchActive={isSearchActive}
+            toggleSearch={toggle.search}
+            toggleSidebar={toggle.sidebar}
+            toggleNotifications={toggle.notifications}
+            toggleCart={toggle.cart}
+            cartItems={cartItems}
+            className="mb-2 md:mb-3"
+          />
 
-          <Divider />
+          <motion.div 
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={pageVariants}
+            className="flex-1 flex flex-col"
+          >
+            {/* Greeting */}
+            <motion.div {...slideUp} className="px-4 text-white">
+              <DynamicGreeting />
+            </motion.div>
 
-
-          {/* Liked Items */}
-          <LikedItems foodItems={allFoodItems}/>
-
-
-          {/* Recommendations */}
-          <motion.div className="px-1 pb-2 text-black flex-1">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl font-thick font-spartan-bold">Our Best Recommendations</h2>
-              <button 
-                onClick={() => scroll(scrollRef.current?.clientWidth || 300)}
-                className="p-2 rounded-full bg-white text-gray-500 hover:bg-gray-100 transition-colors"
-              >
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-            
             <motion.div 
+            {...slideUp} 
+            >
+              <div className="relative pt-3 pb-3 mx-2 my-2">
+                <Maincarosel />
+              </div>
+            </motion.div>
+
+            <motion.div {...slideUp} className="bg-white rounded-t-[30px] rounded-b-none px-6 py-6 pb-2 flex-1 justify-center item-center">
+              <CategoryButtons
+                activeCategory={activeCategory}
+                handleCategoryClick={handleCategoryClick}
+                categoryButtonsRef={categoryButtonsRef}
+              />
+
+            <AnimatePresence>
+              {menuOpen && (
+                <MenuDropdown 
+                key={activeCategory}
+                menuOpen={menuOpen}
+                handleCloseMenu={handleCloseMenu}
+                menuPosition={menuPosition}
+                activeCategory={activeCategory}
+                menuItems={allFoodItems.filter(item => item.category === activeCategory)} 
+                categoryButtonsRef={categoryButtonsRef}
+                onAddToCart={addToCart}
+              />
+              )}
+            </AnimatePresence>
+
+              <Divider />
+
+              <motion.div variants={staggerItems}>
+                  <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
+              </motion.div>
+              <Divider />
+
+              <LikedItems foodItems={allFoodItems}/>
+
+              {/* Recommendations */}
+              <motion.div className="px-1 pb-2 text-black flex-1">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-xl font-thick font-spartan-bold md:text-3xl">Our Best Recommendations</h2>
+                  <button 
+                    onClick={() => scroll(scrollRef.current?.clientWidth || 300)}
+                    className="p-2 rounded-full bg-white text-gray-500 hover:bg-gray-100 transition-colors"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <motion.div 
               ref={scrollRef}
-              className="grid grid-rows-2 grid-flow-col auto-cols-[minmax(45%,1fr)] gap-3 overflow-x-auto scrollbar-hide pb-2"
+              className="grid grid-rows-2 grid-flow-col gap-3 overflow-x-auto scrollbar-hide pb-2 md:pb-0 md:grid-rows-2 md:grid-flow-col"
               variants={staggerItems}
               style={{ 
                 scrollSnapType: 'x mandatory',
                 minHeight: '320px' 
               }}
             >
-              {recommendedItems.map((item) => (
-                <motion.div 
-                  key={item.id} 
-                  id={item.id}
-                  variants={itemAnimation}
-                  className="h-[160px] w-[160px]"
-                  style={{ scrollSnapAlign: 'start' }}
-                >
-                  <RecommendationItem 
-                    item={item}
-                  />
+                  {allFoodItems.filter(item => item.tags?.some(tag => tag.toLowerCase() === 'recommended')).map((item) => (
+                    <div 
+                      key={item.id}
+                      className="flex-shrink-0 w-[45vw] md:w-[30vw]"
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <RecommendationItem item={item} />
+                    </div>
+                  ))}
                 </motion.div>
-              ))}
+              </motion.div>
+              
             </motion.div>
           </motion.div>
         </motion.div>
-      </motion.div>
-    </motion.div>
+      </div>
     </div>
   );
 }

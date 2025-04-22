@@ -8,6 +8,7 @@ import PriceDisplay from './PriceDisplay';
 const BestSellers = ({ foodItems }) => {
   const navigate = useNavigate();
 
+
   const handleViewAll = () => {
     navigate('/best-sellers');
   };
@@ -19,6 +20,9 @@ const BestSellers = ({ foodItems }) => {
     const quantity = cartItem?.quantity || 0;
 
     const isLiked = likedItems.some(likedItem => likedItem.id === item.id);
+    const handleAddToCart = () => {
+      addToCart(item);
+    };
     const handleDecrement = () => {
       if (quantity === 1) {
         removeItem(item.id, item.category);
@@ -33,7 +37,7 @@ const BestSellers = ({ foodItems }) => {
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-xl font-thick font-spartan-bold">Best Seller</h2>
             <button className="text-orange-500 text-sm flex items-center hover:underline">
-              Loading best sellers...
+              Loading Best sellers...
             </button>
           </div>
         </div>
@@ -41,54 +45,56 @@ const BestSellers = ({ foodItems }) => {
     }
 
     return (
-      <div className="min-w-[150px] rounded-xl overflow-hidden relative shadow-lg group hover:shadow-xl transition-shadow duration-200">
-        <img src={item.image} alt={item.name} className="w-full h-24 object-cover" />
+        <div className="w-[150px] flex-shrink-0 rounded-xl overflow-hidden relative shadow-lg group 
+                      hover:shadow-xl transition-shadow duration-200
+                      md:w-[250px] md:h-[200px]">
+        <img src={item.image} alt={item.name} className="w-full h-28 md:h-[200px] object-cover" />
         <button 
         className="absolute top-2 left-2 bg-white/70 rounded-full p-1 z-10"
         onClick={() => toggleLike(item)}
       >
         <Heart 
-          className={`h-4 w-4 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-500'}`}
+          className={`h-4 w-4 md:w-6 md:h-6 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-500'}`}
         />
       </button>
         {/* Price Tag */}
-        <div className="absolute top-0 right-0 bg-black/80 px-1 rounded-md">
-          <PriceDisplay item={item}/>
+        <div className="absolute top-1 right-1 bg-black/80 px-1 rounded-md text-xs font-medium text-white md:w-[64px] md:h-5">
+          <PriceDisplay
+          item={item}
+          className='md:text-[15px]'
+          />
         </div>
 
         {/* Quantity Controls or Add Button */}
         {quantity > 0 ? (
-          <div className="absolute bottom-0 right-0 flex items-center bg-black/80 rounded-md px-1 py-1 space-x-1">
-            <button 
-              onClick={handleDecrement}
-              className="text-white text-xs hover:bg-black/90 px-1 rounded"
-            >
-              -
-            </button>
-            <span className="text-white text-xs">{quantity}</span>
-            <button 
-              onClick={() => addToCart({
-                ...item,
-                category: item.category
-              })}
-              className="text-white text-xs hover:bg-black/90 px-1 rounded"
-            >
-              +
-            </button>
-          </div>
-        ) : (
+        <div className="absolute bottom-1 right-2 bg-black/80 text-white px-2 py-1 rounded-xl z-10 flex items-center gap-2 md: h-7">
           <button 
-            onClick={() => addToCart(item)}
-            className="absolute bottom-0 right-0 px-1 py-1 bg-black/80 text-white rounded-md
-                      text-[10px] font-medium hover:bg-black/90 transition-colors duration-200"
+            onClick={handleDecrement}
+            className="text-xs hover:bg-black/90 px-1 rounded md:text-[90%]"
           >
-            <ShoppingBag className="w-5 h-5" />
+            -
           </button>
-        )}
+          <span className="text-xs md:text-[90%]">{quantity}</span>
+          <button 
+            onClick={handleAddToCart}
+            className="text-xs hover:bg-black/90 px-1 rounded md:text-[90%]"
+          >
+            +
+          </button>
+        </div>
+      ) : (
+        <button 
+          className="absolute bottom-1 right-1 bg-black/80 text-white px-2 py-1 rounded-xl z-10 flex items-center gap-1"
+          onClick={handleAddToCart}
+        >
+          <ShoppingBag className="w-4 h-4 md:h-6 md:w-6" />
+          <span className="text-[0%] md:text-[90%]">Add</span>
+        </button>
+      )}
 
         {/* Food Name Overlay */}
-        <div className="absolute bottom-0 left-0 text-center px-0.2 pb-0.2">
-          <span className="text-white text-xs font-medium bg-black/20 rounded-md px-2 py-1">
+        <div className="absolute bottom-0 left-0 text-center px-0.2 pb-0.2 ">
+          <span className="text-white text-xs font- bg-black/35 rounded-xl px-2 py-1 md:text-xl">
             {item.name}
           </span>
         </div>
@@ -99,12 +105,12 @@ const BestSellers = ({ foodItems }) => {
   return (
     <div className="mt-6 px-1 text-black">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-xl font-thick font-spartan-bold">Best Seller</h2>
+        <h2 className="text-xl font-thick font-spartan-bold md:text-3xl">Best Seller</h2>
         <button 
           onClick={handleViewAll}
-          className="text-orange-500 text-sm flex items-center hover:underline"
+          className="text-orange-500 text-sm flex items-center md:text-xl hover:underline"
         >
-          View All <span className="ml-1">›</span>
+          View All <span className="ml-1 md:text-xl">›</span>
         </button>
       </div>
       <div className="flex space-x-4 overflow-x-auto pb-2 scroll-smooth ">

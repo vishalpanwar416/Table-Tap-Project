@@ -1,13 +1,13 @@
 import React from 'react';
-import { X, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, Minus, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from './CartContent';
-import PriceDisplay from './PriceDisplay';
+import { useNavigate } from 'react-router-dom';
 
-const CartSlidebar = ({ isOpen, onClose }) => {
+const CartSidebar = ({ isOpen, onClose }) => {
   const { cartItems, updateQuantity, removeItem } = useCart();
 
-  const calculateTotal = () => {
+  const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
       let price = item.price;
       
@@ -21,6 +21,10 @@ const CartSlidebar = ({ isOpen, onClose }) => {
     }, 0);
   };
 
+  const subtotal = calculateSubtotal();
+  const gst = subtotal * 0.05; // 5% GST for restaurants in India
+  const total = subtotal + gst;
+  const navigate = useNavigate();
   const slideVariants = {
     hidden: { x: '100%', opacity: 0 },
     visible: { 
@@ -37,86 +41,133 @@ const CartSlidebar = ({ isOpen, onClose }) => {
     exit: { opacity: 0 }
   };
 
+  const formatDate = () => {
+    // Format date in DD/MM/YY format common in India
+    const date = new Date();
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().substr(-2)}`;
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
             key="cart-content"
-            className="fixed top-0 right-0 h-full w-full bg-black z-50 overflow-hidden rounded-l-[80px]"
+            className="fixed top-0 right-0 h-full w-full md:w-8/12 lg:w-7/10 bg-black z-50 overflow-hidden rounded-tl-[80px] rounded-bl-[80px]"
             style={{ maxWidth: '70%' }}
             variants={slideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
-            <div className="pt-16 pb-4 px-6 flex items-center justify-between border-b border-gray-700">
-              <div className="flex items-center">
-                <ShoppingBag className="w-6 h-6 text-white mr-3" />
-                <h2 className="text-2xl font-bold text-white">Your Cart</h2>
+            <div className="h-full flex flex-col">
+              {/* Header with cart icon and title */}
+              <div className="flex justify-center items-center pt-8 pb-4">
+                <div className="bg-white rounded-full p-3 mr-3">
+                  <ShoppingCart className="h-6 w-6 text-black" />
+                </div>
+                <h2 className="text-2xl font-bold text-white">Cart</h2>
               </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-white">
-                <X className="h-6 w-6" />
-              </button>
-            </div>
 
-            <div className="h-[calc(100vh-160px)] overflow-y-auto p-4 pb-16">
-              {cartItems.length === 0 ? (
-                <p className="text-gray-400 text-center mt-8">Your cart is empty</p>
-              ) : (
-                cartItems.map((item) => (
-                  <div 
-                      key={`${item.id}-${item.category}`} 
-                      className="flex items-center justify-between mb-4 p-2 bg-gray-800 rounded-lg"
-                    >
-                    <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
-                    <div className="flex-1 ml-4">
-                      <h3 className="text-white font-medium">{item.name}</h3>
-                      <PriceDisplay item={item}/>
-                      <div className="flex items-center mt-2">
-                      <button 
-                          onClick={() => {
-                            if (item.quantity === 1) {
-                              removeItem(item.id, item.category);
-                            } else {
-                              updateQuantity(item.id, item.category, item.quantity - 1);
-                            }
-                          }}
-                          className="bg-gray-700 text-white px-2 py-1 rounded-l"
-                        >
-                          -
-                        </button> 
-                        <span className="bg-gray-700 px-3 py-1 text-white">{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.category, item.quantity + 1)}
-                          className="bg-gray-700 text-white px-2 py-1 rounded-r"
-                        >
-                          +
-                        </button>
+              <div className="border-t border-gray-700 w-full my-4"></div>
+
+              {/* Cart items count */}
+              <div className="px-6 mb-4">
+                <h3 className="text-white text-xl">
+                  You have {cartItems.length} items in the cart
+                </h3>
+              </div>
+
+              {/* Cart items list */}
+              <div className="flex-1 overflow-y-auto px-6">
+                {cartItems.length === 0 ? (
+                  <p className="text-gray-400 text-center mt-8">Your cart is empty</p>
+                ) : (
+                  cartItems.map((item, index) => (
+                    <div key={`${item.id}-${item.category}`}>
+                      <div className="flex items-start mb-4">
+                        {/* Item image */}
+                        <div className="w-24 h-24 overflow-hidden rounded-lg mr-4">
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                        
+                        {/* Item details */}
+                        <div className="flex-1">
+                          <h3 className="text-white font-medium text-lg">{item.name}</h3>
+                          <p className="text-white font-medium">₹{Number(item.price).toFixed(2)}</p>
+                        </div>
+                        
+                        {/* Date and time (using placeholders) */}
+                        <div className="text-right">
+                          <p className="text-white">{formatDate()}</p>
+                          <p className="text-white">{index % 2 === 0 ? '15:00' : '12:00'}</p>
+                          
+                          {/* Quantity controls */}
+                          <div className="flex items-center justify-end mt-2">
+                            <button 
+                              onClick={() => {
+                                if (item.quantity === 1) {
+                                  removeItem(item.id, item.category);
+                                } else {
+                                  updateQuantity(item.id, item.category, item.quantity - 1);
+                                }
+                              }}
+                              className="bg-black border border-white rounded-full w-6 h-6 flex items-center justify-center"
+                            >
+                              <Minus className="h-3 w-3 text-white" />
+                            </button>
+                            <span className="mx-2 text-white">{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.category, item.quantity + 1)}
+                              className="bg-black border border-white rounded-full w-6 h-6 flex items-center justify-center"
+                            >
+                              <Plus className="h-3 w-3 text-white" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
+                      
+                      {/* Divider between items */}
+                      <div className="border-t border-gray-700 w-full my-4"></div>
                     </div>
-                    <button 
-                      onClick={() => removeItem(item.id, item.category)}
-                      className="text-red-500 hover:text-red-400 ml-4"
-                    >
-                      Remove
+                  ))
+                )}
+              </div>
+
+              {/* Pricing information with Indian tax standards */}
+              {cartItems.length > 0 && (
+                <div className="px-6 pb-20">
+                  <div className="flex justify-between mb-4">
+                    <span className="text-white text-lg">Subtotal</span>
+                    <span className="text-white text-lg font-medium">₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between mb-4">
+                    <span className="text-white text-lg">GST (5%)</span>
+                    <span className="text-white text-lg font-medium">₹{gst.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="border-t border-gray-600 my-4"></div>
+                  
+                  <div className="flex justify-between mb-8">
+                    <span className="text-white text-xl font-medium">Total</span>
+                    <span className="text-white text-xl font-medium">₹{total.toFixed(2)}</span>
+                  </div>
+                  
+                  {/* Checkout button */}
+                  <div className="w-full flex justify-center">
+                    <button className="bg-gray-300 text-black font-medium py-3 px-12 rounded-full text-lg hover:bg-gray-400 transition-colors"
+                      onClick={() => {navigate('/order-confirmation')}}>
+                      Checkout
                     </button>
                   </div>
-                ))
+                </div>
               )}
             </div>
-
-            {cartItems.length > 0 && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gray-900 p-4">
-                <div className="flex justify-between mb-4">
-                  <span className="text-white">Total:</span>
-                  <span className="text-white font-bold">₹{calculateTotal().toFixed(2)}</span>
-                </div>
-                <button className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600">
-                  Checkout
-                </button>
-              </div>
-            )}
           </motion.div>
 
           <motion.div
@@ -134,4 +185,4 @@ const CartSlidebar = ({ isOpen, onClose }) => {
   );
 };
 
-export default CartSlidebar;
+export default CartSidebar;

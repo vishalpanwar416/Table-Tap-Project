@@ -1,8 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Sandwich, UtensilsCrossed, CupSoda, IceCream, Tag, User,
-  ShoppingBag, CreditCard, Phone, HelpCircle, Settings,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Maincarosel from '../../components/HomeCarosel/Maincarosel';
 import { MenuDropdown, Divider } from '../../components/MenuDropdown';
 import RecommendationItem from '../../components/RecommendationItems';
@@ -14,76 +11,18 @@ import NotificationSidebar from '../../components/NotificationSlidebar';
 import CartSidebar from '../../components/CartSidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../components/CartContent';
-
-// Import images
+import LogoutPopup from '../../components/LogoutPopup';
+import { useNavigate } from 'react-router-dom'; 
+import DynamicGreeting from '../../components/Greetings';
+import LikedItems from '../../components/LikedItems';
+import { allFoodItems } from '../../FoodData/foodData';
 import {
-  sushiImg,
-  curryImg,
-  lasagnaImg,
-  cupcakeImg,
-  burgerImg,
-  pancakeImg,
   profileImg
-} from '../../Photos/Index';
+} from '../../Photos/Food/Index';
 
-
-const categories = [
-  { name: 'Snacks', icon: <Sandwich className="w-6 h-6" color="gray" /> },
-  { name: 'Main Course', icon: <UtensilsCrossed className="w-6 h-6" color="gray" /> },
-  { name: 'Beverages', icon: <CupSoda className="w-6 h-6" color="gray" /> },
-  { name: 'Dessert', icon: <IceCream className="w-6 h-6" color="gray" /> },
-  { name: 'Offers', icon: <Tag className="w-6 h-6" color="gray" /> },
-];
-
-const menuItems = {
-  'Snacks': [
-    { name: "Mexican Appetizer", price: "₹499", image: sushiImg },
-    { name: "Pork Skewer", price: "₹399", image: burgerImg },
-    { name: "Spring Rolls", price: "₹299", image: pancakeImg }
-  ],
-  'Main Course': [
-    { name: "Chicken Curry", price: "₹650", image: curryImg },
-    { name: "Beef Steak", price: "₹899", image: burgerImg },
-    { name: "Pasta Alfredo", price: "₹599", image: lasagnaImg },
-    { name: "Fish & Chips", price: "₹699", image: sushiImg }
-  ],
-  'Beverages': [
-    { name: "Fresh Lemonade", price: "₹149", image: pancakeImg },
-    { name: "Iced Tea", price: "₹129", image: cupcakeImg },
-    { name: "Smoothie", price: "₹199", image: burgerImg }
-  ],
-  'Dessert': [
-    { name: "Chocolate Cake", price: "₹349", image: cupcakeImg },
-    { name: "Ice Cream Sundae", price: "₹249", image: pancakeImg },
-    { name: "Cheesecake", price: "₹399", image: lasagnaImg }
-  ],
-  'Offers': [
-    { name: "Combo Meal - 20% OFF", price: "₹499", image: burgerImg },
-    { name: "Happy Hour - Buy 1 Get 1", price: "₹699", image: sushiImg }
-  ]
-};
-
-const menuOptions = [
-  { name: 'My Orders', icon: <ShoppingBag className="w-6 h-6" /> },
-  { name: 'My Profile', icon: <User className="w-6 h-6" /> },
-  { name: 'Payment Methods', icon: <CreditCard className="w-6 h-6" /> },
-  { name: 'Contact Us', icon: <Phone className="w-6 h-6" /> },
-  { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" /> },
-  { name: 'Settings', icon: <Settings className="w-6 h-6" /> },
-];
-// HomePaget.jsx
-const bestSellerItems = [
-  { id: 5, image: sushiImg, name: "Sushi Platter", price: 499 }, // Added id
-  { id: 6, image: curryImg, name: "Chicken Curry", price: 389 },
-  { id: 7, image: lasagnaImg, name: "Lasagna", price: 199 },
-  { id: 8, image: cupcakeImg, name: "Cupcake", price: 170 }
-];
-const recommendationItems = [
-  { id: 9, image: burgerImg, name: "Burger", price: 499 },
-  { id: 10, image: curryImg, name: "Chicken Curry", price: 389 },
-  { id: 11, image: lasagnaImg, name: "Lasagna", price: 199 },
-  { id: 12, image: pancakeImg, name: "Pancake", price: 169 }
-];
+const recommendedItems = allFoodItems.filter(item => 
+  item.tags?.some(tag => tag.toLowerCase() === 'recommended')
+);
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -114,7 +53,6 @@ const itemAnimation = {
 
 export default function HomePage() {
   
-  //const [activeTab, setActiveTab] = useState('home');
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('');
@@ -125,23 +63,12 @@ export default function HomePage() {
   const categoryButtonsRef = useRef(null);
   const { addToCart, cartItems, removeItem, updateQuantity } = useCart();
   const toggleSearch = () => setIsSearchActive(!isSearchActive);
-
-  
-  const toggleNotifications = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-    setIsSidebarOpen(false); // Close profile sidebar if open
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-    setIsNotificationOpen(false); // Close notifications if open
-  };
-
-  const toggleCart = () => {
-    setIsCartOpen(!isCartOpen);
-    // setIsNotificationOpen(false); // Close notifications if open
-  };
-
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const navigate = useNavigate();
+  const scrollRef = useRef(null);
+  const bestSellerItems = allFoodItems.filter(item => 
+    item.tags?.some(tag => tag.toLowerCase() === 'bestseller')
+  );
   const handleCategoryClick = (category, event) => {
     const buttonRect = event.currentTarget.getBoundingClientRect();
     
@@ -151,24 +78,54 @@ export default function HomePage() {
       width: buttonRect.width
     });
     
-    if (activeCategory === category.name && menuOpen) {
-      setMenuOpen(false);
-    } else {
-      setActiveCategory(category.name);
-      setMenuOpen(true);
-    }
+    setActiveCategory(category.name);
+    setMenuOpen(true);
   };
 
-  const handleCloseMenu = () => setMenuOpen(false);
+  const scroll = (scrollOffset) => {
+    if (scrollRef.current) {
+      const container = scrollRef.current;
+      const start = container.scrollLeft;
 
+      container.scrollTo({
+        left: start + scrollOffset,
+        behavior: 'smooth'
+      });
+    }
+  };
+  
+  const toggleNotifications = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+    setIsSidebarOpen(false); 
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+    setIsNotificationOpen(false); 
+  };
+
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+  const handleCloseMenu = () => setMenuOpen(false);
   return (
+    <div className="w-full min-h-screen bg-black"> 
     <motion.div
       initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
-      className="bg-black text-white font-spartan-medium min-h-screen max-w-md mx-auto relative overflow-hidden flax-col"
+      className="bg-black text-white font-spartan-medium min-h-screen max-w-md mx-auto relative overflow-visible flax-col "
     >
+      <LogoutPopup 
+        isOpen={isLogoutOpen}
+        onClose={() => setIsLogoutOpen(false)}
+        onConfirm={() => {
+          navigate('/home');
+          setIsLogoutOpen(false);
+          setIsSidebarOpen(false); 
+        }}
+      />
       {/* Profile Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -176,9 +133,9 @@ export default function HomePage() {
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
             profileImg={profileImg}
-            menuOptions={menuOptions}
             userName="Vishal Panwar"
             userEmail="Vishalpanwar416@gmail.com"
+            onLogout={() => setIsLogoutOpen(true)}
           />
         )}
       </AnimatePresence>
@@ -210,35 +167,32 @@ export default function HomePage() {
       <Header
         isSearchActive={isSearchActive}
         toggleSearch={toggleSearch}
-        toggleSidebar={toggleSidebar}  // Add this
+        toggleSidebar={toggleSidebar}  
         toggleNotifications={toggleNotifications}
         toggleCart={toggleCart}
         cartItems={cartItems}
       />
               
-      <motion.div variants={staggerItems} className="flex-1">
+        <motion.div variants={staggerItems} className="flex-1">
         {/* Greeting */}
-        <motion.div {...slideUp} className="px-4 mt-2">
-          <h1 className="text-[29px] font-spartan-bold">Good Morning</h1>
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: '12rem' }}
-            transition={{ duration: 0.8 }}
-            className="h-1 bg-orange-500 mt-1"
-          />
+        <motion.div {...slideUp} className="px-4">
+          <DynamicGreeting />
         </motion.div>
 
+
         {/* Carousel */}
-        <motion.div {...slideUp} className="px-5 mt-4">
-          <Maincarosel />
+        <motion.div 
+          {...slideUp} 
+        >
+          <div className="relative pt-3 pb-3 mx-2 my-2">
+            <Maincarosel />
+          </div>
         </motion.div>
-      
+              
         {/* Categories */}
-        <motion.div {...slideUp} className="mt-4 bg-white rounded-t-[30px] rounded-b-none p-6 flex-1">
-          <CategoryButtons 
-            categories={categories}
+        <motion.div {...slideUp} className="bg-white rounded-t-[30px] rounded-b-none px-6 py-6 pb-2 flex-1 justify-center item-center">
+          <CategoryButtons
             activeCategory={activeCategory}
-            menuOpen={menuOpen}
             handleCategoryClick={handleCategoryClick}
             categoryButtonsRef={categoryButtonsRef}
           />
@@ -246,13 +200,15 @@ export default function HomePage() {
           <AnimatePresence>
             {menuOpen && (
               <MenuDropdown 
-                menuOpen={menuOpen}
-                handleCloseMenu={handleCloseMenu}
-                menuPosition={menuPosition}
-                activeCategory={activeCategory}
-                menuItems={menuItems}
-                categoryButtonsRef={categoryButtonsRef}
-              />
+              key={activeCategory}
+              menuOpen={menuOpen}
+              handleCloseMenu={handleCloseMenu}
+              menuPosition={menuPosition}
+              activeCategory={activeCategory}
+              menuItems={allFoodItems.filter(item => item.category === activeCategory)} 
+              categoryButtonsRef={categoryButtonsRef}
+              onAddToCart={addToCart}
+            />
             )}
           </AnimatePresence>
 
@@ -260,31 +216,47 @@ export default function HomePage() {
 
           {/* Best Sellers */}
           <motion.div variants={staggerItems}>
-            <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
+          <BestSellers foodItems={bestSellerItems} onAddToCart={addToCart} />
           </motion.div>
 
           <Divider />
 
+
+          {/* Liked Items */}
+          <LikedItems foodItems={allFoodItems}/>
+
+
           {/* Recommendations */}
-          <motion.div className="px-4 pb-4 text-black flex-1">
-            <h2 className="text-xl font-thick mb-3">Our Best Recommendations</h2>
+          <motion.div className="px-1 pb-2 text-black flex-1">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-xl font-thick font-spartan-bold">Our Best Recommendations</h2>
+              <button 
+                onClick={() => scroll(scrollRef.current?.clientWidth || 300)}
+                className="p-2 rounded-full bg-white text-gray-500 hover:bg-gray-100 transition-colors"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+            
             <motion.div 
-              className="grid grid-cols-2 gap-3" 
+              ref={scrollRef}
+              className="grid grid-rows-2 grid-flow-col auto-cols-[minmax(45%,1fr)] gap-3 overflow-x-auto scrollbar-hide pb-2"
               variants={staggerItems}
-              style={{ gridAutoRows: 'minmax(200px, auto)' }}
+              style={{ 
+                scrollSnapType: 'x mandatory',
+                minHeight: '320px' 
+              }}
             >
-              {recommendationItems.map((item) => (
+              {recommendedItems.map((item) => (
                 <motion.div 
                   key={item.id} 
+                  id={item.id}
                   variants={itemAnimation}
-                  className="w-full h-full"
+                  className="h-[160px] w-[160px]"
+                  style={{ scrollSnapAlign: 'start' }}
                 >
                   <RecommendationItem 
-                    image={item.image}
-                    alt={item.name}
-                    foodType={item.description}
-                    price={item.price}
-                    onAddToCart={() => addToCart(item)}
+                    item={item}
                   />
                 </motion.div>
               ))}
@@ -293,5 +265,6 @@ export default function HomePage() {
         </motion.div>
       </motion.div>
     </motion.div>
+    </div>
   );
 }

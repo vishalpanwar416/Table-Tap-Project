@@ -9,7 +9,7 @@ const MenuDropdown = ({
   handleCloseMenu,
   menuPosition,
   activeCategory,
-  menuItems, // Now receives pre-filtered array from parent
+  menuItems,
   categoryButtonsRef,
 }) => {
   const [visibleItems, setVisibleItems] = useState([]);
@@ -109,17 +109,17 @@ const MenuDropdown = ({
         }}
       ></div>
       <div
-        ref={dropdownRef}
-        className="absolute bg-white rounded-xl shadow-xl z-30 overflow-hidden animate-slide-down font-spartan-medium text-black"
-        style={{
-          top: `${menuPosition.top}px`,
-          left: "0",
-          width: "100%",
-          transform: "translateY(10px)",
-          height: "100vh",
-          maxHeight: "none",
-        }}
-      >
+          ref={dropdownRef}
+          className="absolute bg-white rounded-xl shadow-xl z-30 overflow-hidden animate-slide-down font-spartan-medium text-black"
+          style={{
+            top: `${menuPosition.top}px`,
+            left: "0",
+            width: "100%",
+            transform: "translateY(10px)",
+            height: `100hv`,
+            maxHeight: "none",
+          }}
+        >
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
           <h3 className="text-black font-semibold text-center flex-1 text-xl font-spartan-medium">
             {activeCategory} Menu
@@ -138,14 +138,19 @@ const MenuDropdown = ({
             return (
               <div
                 key={`${item.id}-${item.category}`}
-                className="p-4 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors"
+                className="p-4 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors  " 
               >
-                <div className="relative">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-48 object-cover rounded-xl mb-3"
+                <div className="relative w-full rounded-xl mb-3 
+                  h-48
+                  md:w-[60%] md:h-auto md:aspect-[2/1]">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover object-center rounded-xl 
+                          absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                   />
+
+
                   <button
                     className="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1"
                     onClick={() => toggleLike(item)}

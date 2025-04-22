@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, ShoppingBag, User, CreditCard, Phone, HelpCircle, Settings } from 'lucide-react';
+import {useNavigate} from 'react-router-dom'
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail, onLogout }) => {
+  const navigate = useNavigate();
   const slideVariants = {
     hidden: { x: '100%', opacity: 0 },
     visible: { 
@@ -13,12 +15,12 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail
     exit: { x: '100%', opacity: 0, transition: { duration: 0.3 } }
   };
   const menuOptions = [
-    { name: 'My Orders', icon: <ShoppingBag className="w-6 h-6" /> },
-    { name: 'My Profile', icon: <User className="w-6 h-6" /> },
-    { name: 'Payment Methods', icon: <CreditCard className="w-6 h-6" /> },
-    { name: 'Contact Us', icon: <Phone className="w-6 h-6" /> },
-    { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" /> },
-    { name: 'Settings', icon: <Settings className="w-6 h-6" /> },
+    { name: 'My Orders', icon: <ShoppingBag className="w-6 h-6" />, path: '/Myorder' },
+    { name: 'My Profile', icon: <User className="w-6 h-6" />, path: '/profile' },
+    { name: 'Payment Methods', icon: <CreditCard className="w-6 h-6" />, path: '/payment-methods' },
+    { name: 'Contact Us', icon: <Phone className="w-6 h-6" />, path: '/contact' },
+    { name: 'Help & FAQs', icon: <HelpCircle className="w-6 h-6" />, path: '/help' },
+    { name: 'Settings', icon: <Settings className="w-6 h-6" />, path: '/settings' },
   ];
   
 
@@ -27,7 +29,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail
     visible: { opacity: 1 },
     exit: { opacity: 0 }
   };
-
+  const handleNavigation = (path) => {
+    navigate(path);
+    toggleSidebar();
+  };
   return (
     <AnimatePresence>
       {isSidebarOpen && (
@@ -52,7 +57,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail
             <div className="py-4">
               {menuOptions.map((option, index) => (
                 <div key={index}>
-                  <button className="w-full py-3 px-6 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 group">
+                  <button 
+                    onClick={() => handleNavigation(option.path)}
+                    className="w-full py-3 px-6 flex items-center text-left hover:bg-gray-800 transition-colors duration-200 group"
+                  >
                     <div className="bg-gray-700 rounded-full p-3 mr-4 group-hover:bg-purple-500 transition-colors">
                       {React.cloneElement(option.icon, { className: "w-5 h-5 text-gray-300 group-hover:text-white" })}
                     </div>
@@ -70,7 +78,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, profileImg, userName, userEmail
                 }}
               >
                 <div className="bg-gray-700 rounded-full p-3 mr-4 group-hover:bg-red-500 transition-colors">
-                  <LogOut className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  <LogOut className="w-5 h-5 text-gray-300 group-hover:text-white" 
+                  onClick={onLogout}
+                  />
                 </div>
                 <span className="text-lg text-gray-300 group-hover:text-white">Log Out</span>
               </button>
