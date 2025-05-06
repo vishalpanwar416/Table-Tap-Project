@@ -1,28 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard,  
-  Utensils, 
-  ShoppingCart, 
-  Users, 
-  Settings, 
-  Edit, 
-  Trash2, 
-  Check, 
-  X, 
-  Truck, 
-  CheckCircle, 
-  Tag,
-  ChevronUp,
-  ChevronDown,
-  Plus,
-  Search,
-  TrendingUp,
-  User,
-  PieChart
-} from 'lucide-react';
+import { LayoutDashboard, Utensils, ShoppingCart, Users, Settings, Edit, Trash2, Check, X, Truck, CheckCircle, Tag, ChevronUp, ChevronDown, Plus, Search, TrendingUp, User, PieChart } from 'lucide-react';
 import { categories } from '../../components/foodData';
-import { supabase, supabaseStorage } from '../../supabase';
+import { supabase } from '../../supabase';
+import { createFoodItem, getAllFoodItems, updateFoodItem, deleteFoodItem, uploadFoodImage } from './foodService';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -44,6 +25,8 @@ const AdminDashboard = () => {
   });
   const [editItem, setEditItem] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
@@ -52,6 +35,7 @@ const AdminDashboard = () => {
     stats: false,
     chart: false
   });
+  
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -62,74 +46,88 @@ const AdminDashboard = () => {
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 
-  // Fetch food items from Firebase
+  // Fetch food items
+  const fetchFoodItems = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllFoodItems();
+      console.log("Fetched food items:", data);
+      setFoodItems(data || []);
+      setMenuStats({ ...menuStats, total: data?.length || 0 });
+      return data;
+    } catch (error) {
+      console.error('Error fetching food items:', error);
+      setErrorMsg('Failed to load menu items: ' + (error.message || error));
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Use in useEffect
   useEffect(() => {
-    const fetchFoodItems = async () => {
-      const { data, error } = await supabase
-        .from('foodItems')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error) setFoodItems(data);
-    };
     fetchFoodItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
-  // Fetch orders from Firebase
+  // Fetch orders
   useEffect(() => {
     const fetchOrders = async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (!error) setOrders(data);
+        if (error) throw error;
+        setOrders(data || []);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setErrorMsg('Failed to load orders: ' + (error.message || error));
+      } finally {
+        setLoading(false);
+      }
     };
     fetchOrders();
   }, []);
 
   // Calculate order stats
   useEffect(() => {
-    const fetchOrderStats = () => {
-      const pending = orders.filter(order => order.status === 'pending').length;
-      const completed = orders.filter(order => order.status === 'completed').length;
-      
-      setOrderStats({
-        total: orders.length,
-        pending: pending,
-        completed: completed
-      });
-      
-      // Calculate revenue
-      const now = new Date();
-      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      
-      const dailyRevenue = orders
-        .filter(order => new Date(order.createdAt?.toDate()) >= oneDayAgo)
-        .reduce((sum, order) => sum + (order.total || 0), 0);
+    const calculateOrderStats = () => {
+      try {
+        const pending = orders.filter(order => order.status === 'pending').length;
+        const completed = orders.filter(order => order.status === 'completed').length;
         
-      const weeklyRevenue = orders
-        .filter(order => new Date(order.createdAt?.toDate()) >= oneWeekAgo)
-        .reduce((sum, order) => sum + (order.total || 0), 0);
+        setOrderStats({
+          total: orders.length,
+          pending: pending,
+          completed: completed
+        });
         
-      const monthlyRevenue = orders
-        .filter(order => new Date(order.createdAt?.toDate()) >= oneMonthAgo)
-        .reduce((sum, order) => sum + (order.total || 0), 0);
-      
-      setRevenueData({
-        daily: dailyRevenue,
-        weekly: weeklyRevenue,
-        monthly: monthlyRevenue
-      });
-      
-      // Calculate unique active users
-      const uniqueUsers = new Set(orders.map(order => order.userId || order.customerEmail));
-      setActiveUsers(uniqueUsers.size);
+        // Simple placeholder calculations for revenue since createdAt might not be a Firestore timestamp
+        const totalRevenue = orders
+          .filter(order => order.status === 'completed')
+          .reduce((sum, order) => sum + (parseFloat(order.total) || 0), 0);
+          
+        const dailyRevenue = totalRevenue / 30; // Simplified calculation
+        const weeklyRevenue = dailyRevenue * 7;
+        const monthlyRevenue = dailyRevenue * 30;
+        
+        setRevenueData({
+          daily: dailyRevenue,
+          weekly: weeklyRevenue,
+          monthly: monthlyRevenue
+        });
+        
+        // Calculate unique active users
+        const uniqueUsers = new Set(orders.map(order => order.userId || order.customerEmail || order.id));
+        setActiveUsers(uniqueUsers.size);
+      } catch (error) {
+        console.error("Error calculating order stats:", error);
+      }
     };
-    fetchOrderStats();
+    calculateOrderStats();
   }, [orders]);
 
   const handleLogout = async () => {
@@ -138,6 +136,7 @@ const AdminDashboard = () => {
       navigate('/login');
     } catch (error) {
       console.error('Failed to log out', error);
+      setErrorMsg('Failed to log out: ' + (error.message || error));
     }
   };
 
@@ -145,6 +144,7 @@ const AdminDashboard = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log("File selected:", file.name);
       setFormData({
         ...formData,
         imageFile: file,
@@ -153,55 +153,78 @@ const AdminDashboard = () => {
     }
   };
 
-  // Upload image to Firebase Storage
-  const uploadImage = async (file) => {
-    if (!file) return null;
-    
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error } = await supabaseStorage
-      .from('food-images')
-      .upload(filePath, file);
-
-    if (error) throw error;
-
-    return supabaseStorage
-      .from('food-images')
-      .getPublicUrl(filePath).data.publicUrl;
-  };
-
+  // Clear messages after 5 seconds
+  useEffect(() => {
+    if (errorMsg || successMsg) {
+      const timer = setTimeout(() => {
+        setErrorMsg('');
+        setSuccessMsg('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMsg, successMsg]);
 
   // Food Item Management
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
     
-    let imageUrl = formData.image;
-    if (formData.imageFile) {
-      imageUrl = await uploadImage(formData.imageFile);
-    }
-  
-    // Remove ID from the data and preserve createdAt for updates
-    const { id, createdAt, ...formDataWithoutId } = formData;
-    const newItem = {
-      ...formDataWithoutId,
-      price: parseFloat(formData.price),
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-      image: imageUrl,
-      // Only add createdAt for new items
-      ...(!editItem && { createdAt: new Date() })
-    };
-  
     try {
-      setLoading(true);
-      // if (editItem) {
-      //   // Use the document ID in the reference but exclude it from the data
-      //   await updateDoc(doc(supabase, 'foodItems', editItem.id), newItem);
-      // } else {
-      //   await addDoc(collection(supabase, 'foodItems'), newItem);
-      // }
+      console.log("Form submission started");
       
+      // Validate form inputs
+      if (!formData.name || !formData.price || !formData.description) {
+        throw new Error('Please fill all required fields');
+      }
+      
+      // Ensure price is a valid number
+      if (isNaN(parseFloat(formData.price))) {
+        throw new Error('Price must be a valid number');
+      }
+      
+      let imageUrl = formData.image;
+      
+      // Upload image if a new file was selected
+      if (formData.imageFile) {
+        console.log("Uploading image...");
+        try {
+          imageUrl = await uploadFoodImage(formData.imageFile);
+          console.log("Uploaded image URL:", imageUrl);
+        } catch (imgError) {
+          console.error("Image upload failed:", imgError);
+          throw new Error('Image upload failed: ' + (imgError.message || imgError));
+        }
+      }
+      
+      // Format the food item data
+      const foodItemData = {
+        name: formData.name,
+        price: parseFloat(formData.price),
+        description: formData.description,
+        category: formData.category,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        image: imageUrl,
+        created_at: new Date().toISOString()
+      };
+      
+      console.log("Saving food item:", foodItemData);
+      
+      if (editItem) {
+        // Update existing item
+        await updateFoodItem(editItem.id, foodItemData);
+        setSuccessMsg('Food item updated successfully!');
+      } else {
+        // Create new item
+        await createFoodItem(foodItemData);
+        setSuccessMsg('Food item added successfully!');
+      }
+      
+      // Refresh the food items list
+      await fetchFoodItems();
+      
+      // Reset form
       setFormData({
         name: '',
         price: '',
@@ -212,8 +235,12 @@ const AdminDashboard = () => {
         imageFile: null
       });
       setEditItem(null);
+      
+      console.log("Form submission completed successfully");
+      
     } catch (error) {
-      console.error("Error saving item:", error);
+      console.error("Error saving food item:", error);
+      setErrorMsg(error.message || 'Failed to save food item');
     } finally {
       setLoading(false);
     }
@@ -223,6 +250,7 @@ const AdminDashboard = () => {
     setEditItem(item);
     setFormData({
       ...item,
+      price: item.price.toString(),
       tags: item.tags?.join(', ') || '',
       imageFile: null
     });
@@ -231,9 +259,15 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        await supabase.from('foodItems').delete().eq('id', id);
+        setLoading(true);
+        await deleteFoodItem(id);
+        await fetchFoodItems();
+        setSuccessMsg('Food item deleted successfully!');
       } catch (error) {
         console.error("Error deleting item:", error);
+        setErrorMsg('Failed to delete food item: ' + (error.message || error));
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -241,9 +275,27 @@ const AdminDashboard = () => {
   // Order Management
   const updateOrderStatus = async (orderId, status) => {
     try {
-      await supabase.from('orders').update({ status }).eq('id', orderId);
+      setLoading(true);
+      console.log(`Updating order ${orderId} to status: ${status}`);
+      
+      const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
+      if (error) throw error;
+      
+      // Refresh orders after update
+      const { data: updatedOrders, error: fetchError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (fetchError) throw fetchError;
+      
+      setOrders(updatedOrders || []);
+      setSuccessMsg(`Order status updated to ${status}`);
     } catch (error) {
       console.error("Error updating order:", error);
+      setErrorMsg('Failed to update order status: ' + (error.message || error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -265,8 +317,8 @@ const AdminDashboard = () => {
 
   // Filter foodItems based on search and category
   const filteredFoodItems = foodItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'All' || item.category === filterCategory;
     
     return matchesSearch && matchesCategory;
@@ -281,6 +333,33 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+       {errorMsg && (
+        <div className="fixed top-4 right-4 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex items-center">
+          <strong className="mr-2">Error:</strong> {errorMsg}
+          <button onClick={() => setErrorMsg('')} className="ml-4 text-red-700">
+            <X size={18} />
+          </button>
+        </div>
+      )}
+      
+      {successMsg && (
+        <div className="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md flex items-center">
+          <strong className="mr-2">Success:</strong> {successMsg}
+          <button onClick={() => setSuccessMsg('')} className="ml-4 text-green-700">
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-orange-500 border-t-transparent"></div>
+            <span>Processing...</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex h-screen">
         {/* Sidebar - Desktop */}
         <div className="hidden md:flex flex-col w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white">
@@ -314,12 +393,12 @@ const AdminDashboard = () => {
           <div className="p-4 border-t border-gray-700">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mr-3 text-white font-medium">
-               {/* {currentUser?.email?.charAt(0).toUpperCase()} */}
+               A
               </div>
               <div className="overflow-hidden">
                 <p className="text-sm font-medium truncate">
-                  {/* {currentUser?.email} */}
-                  </p>
+                  Admin User
+                </p>
                 <p className="text-xs text-gray-400">Administrator</p>
               </div>
             </div>
@@ -381,12 +460,12 @@ const AdminDashboard = () => {
               <div className="mt-6 pt-6 border-t border-gray-700">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mr-3 text-white font-medium">
-                   {/* {currentUser?.email?.charAt(0).toUpperCase()} */}
+                   A
                   </div>
                   <div>
                     <p className="text-sm font-medium truncate">
-                      {/* {currentUser?.email} */}
-                      </p>
+                      Admin User
+                    </p>
                     <p className="text-xs text-gray-400">Administrator</p>
                   </div>
                 </div>

@@ -145,25 +145,50 @@ const ProfilePage = () => {
       alert('Please use DD/MM/YYYY format for date of birth');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
+
 
     try {
       const [day, month, year] = formData.dob.split('/');
       const dobDate = new Date(`${year}-${month}-${day}`);
-
+      const { data: { user: updatedUser }, error: authError } = await supabase.auth.updateUser({
+        email: formData.email
+      });
+      if (authError) throw authError;
+      const { error: reAuthError } = await supabase.auth.reauthenticate();
+if (reAuthError) throw reAuthError;
       const { error } = await supabase
         .from('profiles')
         .update({
           full_name: formData.name,
+          email: formData.email,
           mobile_number: cleanPhone,
           date_of_birth: dobDate.toISOString()
         })
         .eq('id', user.id);
 
       if (error) throw error;
-
-      setProfileData(formData);
+      setProfileData(prev => ({
+        ...prev,
+        name: formData.name,
+        phone: cleanPhone,
+        dob: formData.dob,
+        email: formData.email
+      }));
+      if (updatedUser.email_confirmed_at) {
+        // Update profile here
+      } else {
+        alert('Please verify your new email address before continuing');
+      }
+      //setProfileData(formData);
       setIsEditing(false);
+    alert('Profile updated successfully! Please check your new email for verification.');
     } catch (error) {
+      console.error('Update error:', error);
       alert('Error updating profile: ' + error.message);
     }
   };
@@ -242,7 +267,6 @@ const ProfilePage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full p-4 bg-gray-100 rounded-xl border-0 focus:ring-2 focus:ring-orange-500 text-black"
-                    disabled
                   />
                 </div>
                 

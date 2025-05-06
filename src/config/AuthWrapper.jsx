@@ -12,7 +12,7 @@ export default function AuthWrapper({ children }) {
         navigate('/login');
         return;
       }
-
+      
   // if (location.pathname === '/complete-profile') return;
       try {
 
