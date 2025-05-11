@@ -3,7 +3,7 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import GoogleButton from '../../components/auth/GoogleButton';
 import AuthForm from '../../components/auth/AuthForm';
-import { supabase } from '../../supabase'; 
+import { authService } from '../../api/authService';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,8 +15,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) navigate('/home');
+      try {
+        const user = await authService.getCurrentUser();
+        if (user) navigate('/home');
+      } catch (err) {
+        // User not logged in, stay on login page
+      }
     };
     checkSession();
   }, [navigate]);
@@ -27,13 +31,7 @@ export default function LoginPage() {
     setError('');
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password.trim()
-      });
-
-      if (error) throw error;
-
+      await authService.signInWithPassword(email, password);
       navigate('/home');
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -47,12 +45,8 @@ export default function LoginPage() {
     setError('');
     
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      navigate('/home');
-
-      if (error) throw error;
+      await authService.signInWithGoogle('/home');
+      // Navigate happens in GoogleButton component after redirect
     } catch (err) {
       setError(err.message || 'Google login failed');
       setLoading(false);
@@ -73,7 +67,7 @@ export default function LoginPage() {
       </div>
 
       {/* Login Container */}
-      <div className="bg-gray-200 w-full flex-1 rounded-t-3xl px-6 pt-10 pb-6 flex flex-col font-spartan">
+      <div className="bg-gray-200 w-full flex-1 rounded-t-3xl px-6 pt-10 pb-6 flex flex-col font-spartan max-w-[390px] md:max-w-4xl lg:max-w-6xl">
         <h2 className="justify-center text-center text-black text-3xl font-semibold mb-12">Welcome</h2>
 
         {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
@@ -85,10 +79,10 @@ export default function LoginPage() {
             <AuthForm.Input
               type="email"
               value={email}
-              onChange={(e) => {setEmail(e.target.value)
-                setError('')
-              }
-              }
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError('');
+              }}
               placeholder="Email"
               required
             />
@@ -131,11 +125,10 @@ export default function LoginPage() {
         <div className="mt-4 text-center">
           <p className="text-gray-600 text-sm">or sign up with</p>
           <div className="flex justify-center mt-4">
-          <GoogleButton 
-            onClick={handleGoogleLogin} 
-            loading={loading}
-            redirectTo="/home"
-          />
+            <GoogleButton 
+              redirectTo="/home"
+              loading={loading}
+            />
           </div>
         </div>
 

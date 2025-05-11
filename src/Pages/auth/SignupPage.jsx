@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../../supabase';
+import { authService } from '../../api/authService';
 import GoogleButton from '../../components/auth/GoogleButton';
+
 export default function SignUpPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -19,8 +20,12 @@ export default function SignUpPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) navigate('/home');
+      try {
+        const user = await authService.getCurrentUser();
+        if (user) navigate('/home');
+      } catch (err) {
+        // User not logged in, stay on signup page
+      }
     };
     checkSession();
   }, [navigate]);
@@ -89,7 +94,6 @@ export default function SignUpPage() {
     return true;
   };
   
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -98,81 +102,52 @@ export default function SignUpPage() {
       setLoading(true);
       setError('');
 
-      const { data : {user}, error : authError } = await supabase.auth.signUp({
+      await authService.signUp({
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-            mobile_number: formData.mobileNumber,
-            date_of_birth: formData.dateOfBirth,
-          },
-        }
+        mobileNumber: formData.mobileNumber,
+        dateOfBirth: formData.dateOfBirth
       });
-  
-      if (authError) throw authError;
-    if (!user) throw new Error('User creation failed');
 
-      // Insert into profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert([{
-          id: user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          mobile_number: formData.mobileNumber,
-          date_of_birth: formData.dateOfBirth
-        }]);
-  
-      if (profileError) throw profileError;
       navigate('/home'); 
     } catch (err) {
-        console.error("Signup error:", err);
-        let errorMessage = 'Registration failed. Please check your details';
-        
-        if (err.message.includes('duplicate')) {
-          if (err.message.includes('profiles_email_key')) {
-            errorMessage = 'Email already registered';
-          }
-          else if (err.message.includes('profiles_mobile_number_key')) {
-            errorMessage = 'Mobile number already registered';
-          }
-  
-  
-  setError(errorMessage);
-}
+      console.error("Signup error:", err);
+      let errorMessage = 'Registration failed. Please check your details';
+      
+      // Handle specific error messages
+      if (err.message.includes('duplicate')) {
+        if (err.message.includes('profiles_email_key')) {
+          errorMessage = 'Email already registered';
+        }
+        else if (err.message.includes('profiles_mobile_number_key')) {
+          errorMessage = 'Mobile number already registered';
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
-  
-  // SignupPage.jsx - Update Google handler
-const handleGoogleSignIn = async () => {
-  try {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/complete-profile`,
-        queryParams: {
-          prompt: 'consent',
-          screen_hint: 'signup',
-          include_granted_scopes: 'true'
-        }
-      }
-    });
-    if (error) throw error;
-  } catch (err) {
-    setError(err.message.includes('already') 
-      ? 'Google account already registered' 
-      : 'Failed to sign in with Google');
-  } finally {
-    setLoading(false);
-  }
-};
+
+
+  const handleGoogleSignup = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      await authService.signUpWithGoogle();
+    } catch (error) {
+      console.error('Google signup error:', error);
+      setError('Google signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="bg-black min-h-screen flex flex-col">
+    <div className="flex justify-center items-start min-h-screen bg-black p-4">
+      <div className="w-full max-w-[390px] md:max-w-4xl lg:max-w-6xl h-screen flex flex-col">
       {/* Header */}
       <div className="w-full px-6 py-8 relative flex justify-center">
         <button 
@@ -320,7 +295,7 @@ const handleGoogleSignIn = async () => {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 text-white py-3 rounded-full mt-6 font-medium text-lg hover:bg-orange-600 transition-colors disabled:bg-orange-300"
+            className="w-full bg-gray-600 text-white py-3 rounded-full mt-6 font-medium text-lg hover:bg-gray-700 transition-colors disabled:bg-orange-300"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
@@ -330,7 +305,7 @@ const handleGoogleSignIn = async () => {
         <div className="mt-6 text-center">
           <p className="text-gray-600 text-sm mb-4">or continue with</p>
           <GoogleButton 
-            onClick={handleGoogleSignIn} 
+            onClick={handleGoogleSignup} 
             loading={loading}
             redirectTo="/complete-profile"
           />
@@ -349,6 +324,7 @@ const handleGoogleSignIn = async () => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 }

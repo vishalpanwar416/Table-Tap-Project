@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Camera, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, supabaseStorage } from '../../supabase';
+import { supabase } from '../../supabase';
 
 const ProfilePage = () => {
   const [profileData, setProfileData] = useState({
@@ -90,7 +90,7 @@ const ProfilePage = () => {
       const filePath = `profile-photos/${user.id}/${fileName}`;
   
       // Corrected storage access
-      const { error: uploadError } = await supabaseStorage.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload( filePath, file, {
           cacheControl: '3600',
@@ -100,7 +100,7 @@ const ProfilePage = () => {
       if (uploadError) throw uploadError;
   
       // Get public URL
-      const { data: { publicUrl } } = supabaseStorage.storage
+      const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
   

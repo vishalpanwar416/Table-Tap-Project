@@ -11,7 +11,6 @@ import OnboardingScreen from '../src/Pages/shared/onboardingScreen';
 import SignupPage from '../src/Pages/auth/SignupPage';
 import { LikesProvider } from '../src/components/customer/LikesContent';
 import LikedItemsPage from '../src/Pages/customer/LikedItemsPage';
-import AdminPage from '../src/Pages/admin/AdminPage';
 import MyOrders from '../src/Pages/customer/MyOrders';
 import OrderConfirmation from '../src/Pages/customer/OrderConfirmation';
 import PaymentPage from '../src/Pages/customer/PaymentPage';
@@ -19,7 +18,8 @@ import PrfilePage from '../src/Pages/customer/ProfilePage';
 import AdminDashboard from '../src/Pages/admin/adminDashboard';
 import CompleteProfile from '../src/Pages/auth/CompleteProfile';
 import AuthWrapper from '../src/config/AuthWrapper';
-
+import ForgotPassword from '../src/Pages/auth/ForgotPassward';
+import ResetPassword from '../src/Pages/auth/ResetPassword';
 const App = () => {
   return (
     <CartProvider>
@@ -28,6 +28,8 @@ const App = () => {
                 <Route path="/" element={<Opening />} />
                 <Route path="/skip1" element={<OnboardingScreen />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<AuthWrapper publicOnly><ForgotPassword/></AuthWrapper>} />
+                <Route path="/reset-password" element={<AuthWrapper publicOnly><ResetPassword /></AuthWrapper>} />
                 <Route 
                   path="/home" 
                   element={
@@ -41,14 +43,6 @@ const App = () => {
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/complete-profile" element={<CompleteProfile />} />
                 <Route path="/liked-items" element={<LikedItemsPage />} />
-                <Route 
-                  path="/admin" 
-                  element={
-                    <AuthWrapper>
-                      <AdminPage />
-                    </AuthWrapper>
-                  } 
-                />
                 <Route 
                   path="/admindashboard" 
                   element={

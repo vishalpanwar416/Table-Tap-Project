@@ -25,7 +25,7 @@ const GoogleButton = ({ loading = false, redirectTo = '' }) => {
     <button
       onClick={handleGoogleLogin}
       disabled={loading || isLoading}
-      className="w-full bg-white text-gray-700 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
+      className="w-full bg-white text-gray-700 py-3 rounded-3xl font-medium flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors disabled:opacity-50"
     >
       {isLoading ? (
         <>

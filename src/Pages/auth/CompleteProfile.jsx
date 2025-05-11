@@ -1,36 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate} from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { supabase } from '../../supabase';
+import { authService } from '../../api/authService';
+
+
 export default function CompleteProfile() {
   const [mobileNumber, setMobileNumber] = useState('+91 ');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
   useEffect(() => {
     const checkProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select()
-          .eq('id', user.id)
-          .single();
-  
-        if (profile?.mobile_number && profile?.date_of_birth) {
-          navigate('/home');
+      try {
+        const user = await authService.getCurrentUser();
+        
+        if (user) {
+          const isComplete = await authService.isProfileComplete(user.id);
+          if (isComplete) {
+            navigate('/home');
+          }
+        } else {
+          navigate('/login');
         }
-      } else {
+      } catch (err) {
+        console.error("Profile check error:", err);
         navigate('/login');
       }
     };
+    
     checkProfile();
   }, [navigate]);
   
-
-const handleMobileChange = (e) => {
+  const handleMobileChange = (e) => {
     const value = e.target.value;
     if (e.nativeEvent.inputType === 'deleteContentBackward') {
       if (value.length <= 4) {
@@ -69,20 +72,12 @@ const handleMobileChange = (e) => {
   
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      setError('');
       
-      if (!user) throw new Error('No authenticated user');
-      const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        full_name: user.user_metadata.full_name || user.user_metadata.name,
-        email: user.email,
+      await authService.updateProfile({
         mobile_number: mobileNumber,
         date_of_birth: dateOfBirth
       });
-  
-      if (error) throw error;
       
       navigate('/home');
     } catch (err) {
@@ -91,8 +86,10 @@ const handleMobileChange = (e) => {
       setLoading(false);
     }
   };
+  
   return (
-    <div className="bg-black min-h-screen flex flex-col">
+    <div className="flex justify-center items-start min-h-screen bg-black p-4">
+      <div className="w-full max-w-[390px] md:max-w-4xl lg:max-w-6xl h-screen flex flex-col">
       <div className="w-full px-6 py-8 relative flex justify-center">
         <button 
           onClick={() => navigate(-1)}
@@ -100,7 +97,7 @@ const handleMobileChange = (e) => {
         >
           <ArrowLeft size={30} />
         </button>
-        <h1 className="text-white text-2xl font-bold">Complete Profile</h1>
+        <h1 className="text-white text-2xl font-spartan-bold">Complete Profile</h1>
       </div>
 
       <div className="bg-gray-200 flex-1 rounded-t-3xl px-6 pt-8 pb-6 flex flex-col">
@@ -112,7 +109,7 @@ const handleMobileChange = (e) => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-black mb-2 font-medium">Mobile Number</label>
+            <label className="block text-black mb-2 font-spartan-medium">Mobile Number</label>
             <input
               type="tel"
               value={mobileNumber}
@@ -124,7 +121,7 @@ const handleMobileChange = (e) => {
           </div>
 
           <div>
-            <label className="block text-black mb-2 font-medium">Date of Birth</label>
+            <label className="block text-black mb-2 font-spartan-medium">Date of Birth</label>
             <input
               type="date"
               value={dateOfBirth}
@@ -133,16 +130,18 @@ const handleMobileChange = (e) => {
               required
             />
           </div>
-
+          <div className="pt-10">
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 text-white py-3 rounded-full mt-6 font-medium text-lg hover:bg-orange-600 transition-colors disabled:bg-orange-300"
+            className="w-full bg-gray-600 text-white py-3 rounded-full mt-6 font-spartan-bold text-lg hover:bg-gray-700 transition-colors disabled:bg-gray-400"
           >
             {loading ? 'Saving...' : 'Complete Profile'}
           </button>
+          </div>
         </form>
       </div>
+    </div>
     </div>
   );
 }
